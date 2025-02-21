@@ -1,0 +1,28 @@
+{
+  "buildFiles": [
+    "H:\\CodeS\\More\\flutter\\packages\\flutter_tools\\gradle\\src\\main\\groovy\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "H:\\Users\\space\\AppData\\Local\\Android\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "H:\\CodeS\\Code\\Project Clockify\\clockify\\android\\app\\.cxx\\Debug\\1iq1q6ki\\x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "H:\\Users\\space\\AppData\\Local\\Android\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "H:\\CodeS\\Code\\Project Clockify\\clockify\\android\\app\\.cxx\\Debug\\1iq1q6ki\\x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {},
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "H:\\Users\\space\\AppData\\Local\\Android\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang.exe",
+      "cppCompilerExecutable": "H:\\Users\\space\\AppData\\Local\\Android\\ndk\\27.0.12077973\\toolchains\\llvm\\prebuilt\\windows-x86_64\\bin\\clang++.exe"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": []
+}
