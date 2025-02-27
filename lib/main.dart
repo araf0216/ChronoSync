@@ -1,5 +1,6 @@
 import 'package:clockify/home.dart';
-import 'package:flutter/material.dart';
+import 'package:shadcn_flutter/shadcn_flutter.dart';
+// import 'clockdb.dart';
 
 void main() {
   runApp(const MainApp());
@@ -15,16 +16,13 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: HomeScreen(),
+    return ShadcnApp(
       theme: ThemeData(
-        scaffoldBackgroundColor: Colors.black,
-        primaryColor: Colors.blue,
-        secondaryHeaderColor: Colors.white,
+        colorScheme: ColorSchemes.darkBlue(),
+        typography: Typography.geist(),
+        radius: 0.5,
       ),
-      // darkTheme: ThemeData.dark(),
+      home: HomeScreen(),
     );
   }
-
-  
 }
