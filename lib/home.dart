@@ -91,17 +91,22 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  bool updateTriggered = false;
+
   Future<void> _updateCompletes() async {
+    if (updateTriggered) return;
     List<ClockDate> clock = await dbOps("R");
     List<DateTime> newCompletes = clock.map((c) => c.date).toList();
     setState(() {
       completes = newCompletes;
+      updateTriggered = true;
     });
   }
 
   cal.CalendarValue? _value;
   CalendarView _view = CalendarView.now();
   Widget calendar() {
+    updateTriggered = true;
     ShadcnLocalizations localizations = ShadcnLocalizations.of(context);
     return Card(
       child: IntrinsicWidth(
@@ -143,6 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onChanged: (value) {
                 setState(() {
                   _value = value;
+                  updateTriggered = false;
                 });
                 _updateCompletes();
               },
