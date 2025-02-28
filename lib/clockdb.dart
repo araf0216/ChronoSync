@@ -90,6 +90,8 @@ Future<List<ClockDate>> dbOps(String op, [ClockDate? clock, DateTime? date]) asy
       if (count != null) {
         clock.id = count;
 
+        print("Length and ID found");
+
         await txn.insert(
           'clocks',
           clock.toMap(),
