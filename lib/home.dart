@@ -18,6 +18,8 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime today = DateTime.now();
   List<DateTime> completes = [];
 
+  bool updateTriggered = false;
+
   @override
   Widget build(BuildContext context) {
     return mat.Scaffold(
@@ -91,8 +93,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  bool updateTriggered = false;
-
   Future<void> _updateCompletes() async {
     if (updateTriggered) return;
     List<ClockDate> clock = await dbOps("R");
@@ -155,11 +155,11 @@ class _HomeScreenState extends State<HomeScreen> {
               selectionMode: CalendarSelectionMode.single,
               now: DateTime.now(),
               stateBuilder: (date) {
-                if (date.isAfter(DateTime.now()) || date.isBefore(start)) {
-                  return cal.DateState.disabled;
-                }
                 if (completes.contains(date)) {
                   return cal.DateState.completed;
+                }
+                if (date.isAfter(DateTime.now()) || date.isBefore(start)) {
+                  return cal.DateState.disabled;
                 }
                 return cal.DateState.enabled;
               },

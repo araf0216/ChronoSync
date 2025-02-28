@@ -33,10 +33,17 @@ class _TimeSelect extends State<TimeSelect> {
 
   void setClock() {
     DateTime date = mat.DateUtils.dateOnly(widget.now);
-    setState(() async {
-      int id = (await dbOps("R")).length;
-      await dbOps("C", ClockDate(id: id, date: date, inTime: inTime, outTime: outTime));
+    
+    dbOps("R").then((clocks) {
+      setState(() {
+        id = clocks.length;
+      });
     });
+
+    dbOps("C", ClockDate(id: id, date: date, inTime: inTime, outTime: outTime)).then(() {
+      
+    });
+
     Navigator.pop(context);
   }
 

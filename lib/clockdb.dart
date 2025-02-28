@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:nativewrappers/_internal/vm/lib/ffi_patch.dart';
 
 // import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
@@ -7,15 +8,15 @@ import 'package:path/path.dart' as path;
 import 'package:sqflite/sqflite.dart';
 
 class ClockDate {
-  final int id;
+  int id;
   // pass in millisecondsSinceEpoch property <-> retrieve using .fromMillisecondsSinceEpoch method
   final DateTime date;
   // pass in hour and minute separately
   final TimeOfDay inTime;
   final TimeOfDay outTime;
 
-  const ClockDate(
-      {required this.id,
+  ClockDate(
+      {this.id = 0,
       required this.date,
       required this.inTime,
       required this.outTime});
@@ -50,16 +51,6 @@ Future<List<ClockDate>> dbOps(String op, [ClockDate? clock, DateTime? date]) asy
     version: 1,
   );
 
-  Future<void> insertClock(ClockDate clock) async {
-    final db = await database;
-
-    await db.insert(
-      'clocks',
-      clock.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
   Future<List<ClockDate>> clocks() async {
     final db = await database;
 
@@ -81,6 +72,39 @@ Future<List<ClockDate>> dbOps(String op, [ClockDate? clock, DateTime? date]) asy
           outTime: TimeOfDay(hour: outHour, minute: outMin),
         ),
     ];
+  }
+
+  Future<void> insertClock(ClockDate clock) async {
+    final db = await database;
+
+    await db.transaction((txn) async {
+      int s = 0;
+      int? count = Sqflite.firstIntValue(await txn.rawQuery('SELECT COUNT(*) FROM clocks'));
+
+      while (count != null) {
+        Future.delayed(Duration(seconds: 1));
+        s++;
+        print(s);
+      }
+
+      if (count != null) {
+        clock.id = count;
+
+        await txn.insert(
+          'clocks',
+          clock.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+
+      
+    });
+
+    // await db.insert(
+    //   'clocks',
+    //   clock.toMap(),
+    //   conflictAlgorithm: ConflictAlgorithm.replace,
+    // );
   }
 
   Future<void> updateClock(ClockDate clock) async {
