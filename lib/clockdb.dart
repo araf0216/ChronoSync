@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:nativewrappers/_internal/vm/lib/ffi_patch.dart';
+// import 'dart:nativewrappers/_internal/vm/lib/ffi_patch.dart';
 
 // import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
@@ -38,7 +38,8 @@ class ClockDate {
   }
 }
 
-Future<List<ClockDate>> dbOps(String op, [ClockDate? clock, DateTime? date]) async {
+Future<List<ClockDate>> dbOps(String op,
+    [ClockDate? clock, DateTime? date]) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final database = openDatabase(
@@ -78,28 +79,22 @@ Future<List<ClockDate>> dbOps(String op, [ClockDate? clock, DateTime? date]) asy
     final db = await database;
 
     await db.transaction((txn) async {
-      int s = 0;
-      int? count = Sqflite.firstIntValue(await txn.rawQuery('SELECT COUNT(*) FROM clocks'));
-
-      while (count != null) {
-        Future.delayed(Duration(seconds: 1));
-        s++;
-        print(s);
-      }
+      int? count = Sqflite.firstIntValue(
+          await txn.rawQuery('SELECT COUNT(*) FROM clocks'));
 
       if (count != null) {
         clock.id = count;
 
-        print("Length and ID found");
+        print("Length and ID found: ${clock.id}");
 
         await txn.insert(
           'clocks',
           clock.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
+      } else {
+        print("No length or ID");
       }
-
-      
     });
 
     // await db.insert(

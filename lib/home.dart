@@ -1,8 +1,7 @@
-import 'package:clockify/bottom_nav.dart';
 import 'package:clockify/time.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'calendar.dart' as cal;
+// import 'calendar.dart' as cal;
 // import 'package:sqflite/sqflite.dart';
 import 'clockdb.dart';
 
@@ -16,7 +15,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime start = DateTime.utc(2025, 1, 1);
   DateTime today = DateTime.now();
-  List<DateTime> completes = [];
+  List<DateTime> completes = [
+    DateTime(2025, 2, 14),
+    DateTime(2025, 2, 9),
+    DateTime(2025, 3, 1)
+  ];
 
   bool updateTriggered = false;
 
@@ -30,22 +33,21 @@ class _HomeScreenState extends State<HomeScreen> {
             AppBar(
               title: Text(
                 "Select New Clock-In Date",
-                style: TextStyle(fontSize: 20),
-                textAlign: TextAlign.center,
-              ).h2(),
+                style: TextStyle(fontSize: 24),
+              ).h2().sans().center(),
               alignment: Alignment.center,
             ),
           ],
           child: Container(
             alignment: Alignment.topCenter,
             margin: EdgeInsets.only(top: 50),
-            child: calendar(),
+            child: defCalendar(),
           ),
         ),
       ),
       floatingActionButton: mat.FloatingActionButton(
-        onPressed: () async {
-          final newComplete = await Navigator.push(
+        onPressed: () {
+          Navigator.push(
             context,
             MaterialPageRoute(
               // builder: (context) => TimeSelect(now: DateTime.now()),
@@ -53,13 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   TimeSelect(now: DateTime.now(), start: start, end: today),
             ),
           );
-
-          // print(newComplete);
-
-          if (newComplete != null) {
-            completes.add(newComplete);
-            print(completes);
-          }
         },
         backgroundColor: Color(0xFF3C83F6),
         child: Icon(
@@ -68,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
           size: 40,
         ),
       ),
-      bottomNavigationBar: BottomNavBar(),
+      // bottomNavigationBar: BottomNavBar(),
     );
   }
 
@@ -78,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return DatePicker(
       value: _selectedDay,
       mode: PromptMode.dialog,
-      dialogTitle: const Text('Select Date'),
+      dialogTitle: const Text('Select Date').sans(),
       stateBuilder: (date) {
         if (date.isAfter(DateTime.now()) || date.isBefore(start)) {
           return DateState.disabled;
@@ -103,10 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  cal.CalendarValue? _value;
-  CalendarView _view = CalendarView.now();
-  Widget calendar() {
-    updateTriggered = true;
+  CalendarValue? value;
+  CalendarView view = CalendarView.now();
+  Widget defCalendar() {
     ShadcnLocalizations localizations = ShadcnLocalizations.of(context);
     return Card(
       child: IntrinsicWidth(
@@ -120,12 +114,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   density: ButtonDensity.icon,
                   onPressed: () {
                     setState(() {
-                      _view = _view.previous;
+                      view = view.previous;
                     });
                   },
                   child: const Icon(Icons.arrow_back).iconXSmall(),
                 ),
-                Text('${localizations.getMonth(_view.month)} ${_view.year}')
+                Text('${localizations.getMonth(view.month)} ${view.year}').sans()
                     .small()
                     .medium()
                     .center()
@@ -134,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   density: ButtonDensity.icon,
                   onPressed: () {
                     setState(() {
-                      _view = _view.next;
+                      view = view.next;
                     });
                   },
                   child: const Icon(Icons.arrow_forward).iconXSmall(),
@@ -142,26 +136,21 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const Gap(16),
-            cal.Calendar(
-              value: _value,
-              view: _view,
-              onChanged: (value) {
+            Calendar(
+              value: value,
+              view: view,
+              onChanged: (v) {
                 setState(() {
-                  _value = value;
-                  updateTriggered = false;
+                  value = v;
                 });
-                _updateCompletes();
               },
               selectionMode: CalendarSelectionMode.single,
               now: DateTime.now(),
               stateBuilder: (date) {
-                if (completes.contains(date)) {
-                  return cal.DateState.completed;
-                }
                 if (date.isAfter(DateTime.now()) || date.isBefore(start)) {
-                  return cal.DateState.disabled;
+                  return DateState.disabled;
                 }
-                return cal.DateState.enabled;
+                return DateState.enabled;
               },
             ),
           ],
