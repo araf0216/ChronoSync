@@ -39,7 +39,7 @@ class ClockDate {
 }
 
 Future<List<ClockDate>> dbOps(String op,
-    [ClockDate? clock, DateTime? date]) async {
+    {ClockDate? clock, int? id}) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final database = openDatabase(
@@ -79,11 +79,11 @@ Future<List<ClockDate>> dbOps(String op,
     final db = await database;
 
     await db.transaction((txn) async {
-      int? count = Sqflite.firstIntValue(
-          await txn.rawQuery('SELECT COUNT(*) FROM clocks'));
+      int? maxId = Sqflite.firstIntValue(
+          await txn.rawQuery('SELECT MAX(id) FROM clocks'));
 
-      if (count != null) {
-        clock.id = count;
+      if (maxId != null) {
+        clock.id = maxId + 1;
 
         print("Length and ID found: ${clock.id}");
 
@@ -93,15 +93,9 @@ Future<List<ClockDate>> dbOps(String op,
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
       } else {
-        print("No length or ID");
+        print("No ID");
       }
     });
-
-    // await db.insert(
-    //   'clocks',
-    //   clock.toMap(),
-    //   conflictAlgorithm: ConflictAlgorithm.replace,
-    // );
   }
 
   Future<void> updateClock(ClockDate clock) async {
@@ -115,17 +109,22 @@ Future<List<ClockDate>> dbOps(String op,
     );
   }
 
-  Future<void> deleteClock(DateTime date) async {
+  Future<void> deleteClock(int id) async {
     final db = await database;
 
     await db.delete(
       'clocks',
-      where: 'date = ?',
-      whereArgs: [date.millisecondsSinceEpoch],
+      where: 'id = ?',
+      whereArgs: [id],
     );
   }
 
   switch (op) {
+    case "D":
+      if (id != null) {
+        deleteClock(id);
+      }
+      return Future.value([]);
     case "R":
       return clocks();
     case "C":

@@ -1,3 +1,4 @@
+import 'package:clockify/clockdb.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 // import 'clockdb.dart';
@@ -34,23 +35,13 @@ class _TimeSelect extends State<TimeSelect> {
   void setClock() {
     DateTime date = mat.DateUtils.dateOnly(widget.now);
 
-    // dbOps("R").then((clocks) {
-    //   setState(() {
-    //     id = clocks.length;
-    //   });
-    // });
-    print("New Clock-In on $date from $inTime to $outTime");
-
     Navigator.pop(context);
 
     // Actual working database insert of new ClockDate object
-    // dbOps("C", ClockDate(id: id, date: date, inTime: inTime, outTime: outTime))
-    //     .then((v) {
-    //   setState(() {
-    //     // complete here
-    //     // print("v");
-    //   });
-    // });
+    dbOps("C", clock: ClockDate(date: date, inTime: inTime, outTime: outTime))
+        .then((v) {
+      print("New Clock-In on $date from $inTime to $outTime");
+    });
   }
 
   @override
@@ -89,7 +80,7 @@ class _TimeSelect extends State<TimeSelect> {
             children: [
               Text(
                 "Select Clock-In/Out Times",
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 24),
               ).h2().sans(),
               const Gap(50),
               IntrinsicWidth(

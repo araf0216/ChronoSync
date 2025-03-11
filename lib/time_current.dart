@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:clockify/clockdb.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'helpers.dart';
 // import 'clockdb.dart';
 
 class TimeScreen extends mat.StatefulWidget {
@@ -17,24 +20,49 @@ class TimeScreen extends mat.StatefulWidget {
 }
 
 class _TimeScreen extends State<TimeScreen> {
-  // int id = 0;
+  int buildCount = 0;
   TimeOfDay? inTime;
   TimeOfDay? outTime;
   // this clockstate needs to be saved and retrieved from shared preferences
+  // perform fetch from shared preferences on initState
   // if not found in shared preferences, simply default to Out state
   String clockState = "Out";
   TimeOfDay stateTime = TimeOfDay.now();
+  String inTimeStr = "def";
+  String outTimeStr = "def";
 
-  void setTime(String io, TimeOfDay time) {
+  @override
+  void initState() {
+    super.initState();
+    getState();
+  }
+
+  void getState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final int? inHour = prefs.getInt("inHour");
+    final int? inMinute = prefs.getInt("inMinute");
+
+    if (inHour != null && inMinute != null) {
+      setState(() {
+        clockState = "In";
+        inTime = TimeOfDay(hour: inHour, minute: inMinute);
+        inTimeStr = timeStr(inTime!);
+      });
+    }
+  }
+
+  void setTime(String io) {
     if (io == "In") {
       setState(() {
-        inTime = time;
-        print("Clock In Time Set: $time");
+        inTime = stateTime;
+        inTimeStr = timeStr(inTime!);
+        print("Clock In Time Set: $inTime");
       });
     } else if (io == "Out") {
       setState(() {
-        outTime = time;
-        print("Clock Out Time Set: $time");
+        outTime = stateTime;
+        outTimeStr = timeStr(outTime!);
+        print("Clock Out Time Set: $outTime");
       });
     }
   }
@@ -45,9 +73,50 @@ class _TimeScreen extends State<TimeScreen> {
     });
   }
 
+  void setClockState() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (clockState == "In" && inTime != null) {
+      int inHour = inTime!.hour;
+      int inMinute = inTime!.minute;
+      await prefs.setInt("inHour", inHour);
+      await prefs.setInt("inMinute", inMinute);
+      print("Clock State Saved: Hour -> $inHour, Minute -> $inMinute");
+    } else if (clockState == "Out") {
+      final int? inHour = prefs.getInt("inHour");
+      final int? inMinute = prefs.getInt("inMinute");
+
+      inTime ??= TimeOfDay(hour: inHour!, minute: inMinute!);
+
+      print("Clock State Removed: Hour -> $inHour, Minute -> $inMinute");
+      await prefs.remove("inHour");
+      await prefs.remove("inMinute");
+    }
+  }
+
+  // Actual working database insert of new ClockDate object
+  void setClock() {
+    if (inTime == null || outTime == null) {
+      print("inTime is ${inTime == null} | outTime is ${outTime == null}");
+      return;
+    }
+    
+    DateTime date = DateTime(widget.now.year, widget.now.month, widget.now.day);
+
+    print("Shits here and shits fine");
+    
+    TimeOfDay intime = inTime!, outtime = outTime!;
+
+    dbOps("C", clock: ClockDate(date: date, inTime: intime, outTime: outtime))
+        .then((v) {
+      print("New Clock-In on $date from $intime to $outtime");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(stateTime);
+    buildCount++;
+
     return mat.Scaffold(
       floatingActionButton: mat.FloatingActionButton.extended(
         backgroundColor: Colors.transparent,
@@ -55,15 +124,61 @@ class _TimeScreen extends State<TimeScreen> {
         label: Switch(
           value: clockState == "In",
           onChanged: (value) {
-            // dialog for confirmation - TO DO
-
-            // actual toggleState function call
-            setState(() {
-              clockState = value ? "In" : "Out";
-            });
-            // save the statetime that is currently set in the time picker in the state pre-toggle
-            // the value in statetime must continuously update and sync with the value of the actual time picker
-            setTime(clockState, stateTime);
+            updateStateTime(stateTime);
+            setTime(clockState == "In" ? "Out" : "In");
+            if (clockState == "In") {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Center(
+                      child: Text(
+                        "Confirm Check-In",
+                        style: TextStyle(fontSize: 20),
+                      ).h2(pad: 0).sans(),
+                    ),
+                    content: Center(
+                      child: mat.Column(
+                        children: [
+                          Text("Confirm Clocked In Time:").sans(),
+                          Text("$inTimeStr - $outTimeStr", style: TextStyle(color: Colors.white)).h4().sans(),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      SecondaryButton(
+                        child: Text("Cancel").sans(),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      PrimaryButton(
+                        child: Text("OK").sans(),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          setState(() {
+                            clockState = value ? "In" : "Out";
+                          });
+                          // upload to database or straight to api call
+                          setClockState();
+                          setClock();
+                          print(
+                              "New clock from $inTimeStr - $outTimeStr uploaded and synced to database");
+                          setState(() {
+                            inTime = null;
+                            outTime = null;
+                          });
+                        },
+                      ),
+                    ],
+                    actionsCenterAlign: true,
+                  );
+                },
+              );
+            } else {
+              setState(() {
+                clockState = value ? "In" : "Out";
+              });
+              setClockState();
+            }
           },
           scale: 2,
         ),
@@ -71,12 +186,22 @@ class _TimeScreen extends State<TimeScreen> {
       floatingActionButtonLocation:
           mat.FloatingActionButtonLocation.centerFloat,
       body: Scaffold(
+        headers: [
+          AppBar(
+            alignment: Alignment.center,
+            child: Text(
+              "Current Status:",
+              // "Current Build Count: $buildCount\nCurrent State Time: ${timeStr(stateTime)}",
+              textAlign: TextAlign.center,
+            ).sans().h4(),
+          ),
+        ],
         child: Container(
           alignment: Alignment.topCenter,
           child: Column(
             children: [
               Text(
-                "You Are Currently Clocked $clockState",
+                "Clocked $clockState",
                 style: TextStyle(fontSize: 20),
               ).h2().sans(),
               const Gap(50),
@@ -91,7 +216,7 @@ class _TimeScreen extends State<TimeScreen> {
                             .h4()
                             .sans(),
                         TimeDial(
-                            io: clockState,
+                            io: clockState == "In" ? "Out" : "In",
                             setTime: setTime,
                             updateStateTime: updateStateTime),
                       ],
@@ -109,7 +234,7 @@ class _TimeScreen extends State<TimeScreen> {
 
 class TimeDial extends StatefulWidget {
   final String io;
-  final Function(String, TimeOfDay) setTime;
+  final Function(String) setTime;
   final Function(TimeOfDay) updateStateTime;
 
   const TimeDial(
@@ -123,26 +248,40 @@ class TimeDial extends StatefulWidget {
 }
 
 class _TimeDial extends State<TimeDial> {
+  Timer? timer;
   TimeOfDay? time;
   bool pressed = false;
   bool init = true;
+  int tdBuildCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!pressed) {
+      timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
+        TimeOfDay now = TimeOfDay.now();
+        if ((time!.hour != now.hour || time!.minute != now.minute)) {
+          setState(() {
+            time = now;
+            widget.updateStateTime(time ?? now);
+          });
+        }
+      });
+    } else {
+      timer?.cancel();
+    }
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    time = TimeOfDay.now();
-    Timer.periodic(Duration(seconds: 1), (Timer timer) {
-      TimeOfDay now = TimeOfDay.now();
-      if (!pressed && (time!.hour != now.hour || time!.minute != now.minute)) {
-        // print("Time to update state minute");
-        // print(time);
-        // print(now);
-        setState(() {
-          time = now;
-        });
-        widget.updateStateTime(time ?? now);
-        widget.setTime(widget.io, time ?? now);
-      }
-    });
+    time = time ?? TimeOfDay.now();
+    tdBuildCount++;
 
     Widget actionB() {
       return TimePicker(
@@ -154,12 +293,13 @@ class _TimeDial extends State<TimeDial> {
           style: TextStyle(fontSize: 20),
         ).h2().sans(),
         onChanged: (value) {
+          widget.updateStateTime(value ?? TimeOfDay.now());
+          widget.setTime(widget.io);
           setState(() {
-            pressed = true;
             time = value;
+            pressed = true;
+            timer?.cancel();
           });
-          widget.updateStateTime(time ?? TimeOfDay.now());
-          widget.setTime(widget.io, time ?? TimeOfDay.now());
         },
       );
     }

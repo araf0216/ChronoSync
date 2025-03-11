@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'example.dart';
+import 'history.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -15,17 +15,30 @@ class _UserScreenState extends State<UserScreen> {
     return Scaffold(
       headers: [
         AppBar(
-          title: Text(
-            "Welcome, User",
-            style: TextStyle(fontSize: 24),
-          ).h2().sans().center(),
+          title: Stack(
+            children: [
+              Text(
+                "Welcome, User",
+                style: TextStyle(fontSize: 24),
+              ).h2().sans().center(),
+              Container(
+                alignment: Alignment.topRight,
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 2, color: Colors.blue),
+                    shape: BoxShape.circle
+                  ),
+                  child: Icon(BootstrapIcons.threeDots, color: Colors.blue, size: 18),
+                ),
+              ),
+            ]
+          ),
           alignment: Alignment.center,
         ),
       ],
-      child: Container(
-        alignment: Alignment.topCenter,
-        margin: EdgeInsets.only(top: 50),
-        child: DataExample2(),
+      child: mat.Container(
+        alignment: Alignment.center,
+        child: SingleChildScrollView(child: ClockTimeline()),
       ),
     );
   }

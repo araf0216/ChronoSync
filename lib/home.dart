@@ -15,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime start = DateTime.utc(2025, 1, 1);
   DateTime today = DateTime.now();
+  bool selected = false;
   List<DateTime> completes = [
     DateTime(2025, 2, 14),
     DateTime(2025, 2, 9),
@@ -45,58 +46,38 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      floatingActionButton: mat.FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              // builder: (context) => TimeSelect(now: DateTime.now()),
-              builder: (context) =>
-                  TimeSelect(now: DateTime.now(), start: start, end: today),
-            ),
-          );
-        },
-        backgroundColor: Color(0xFF3C83F6),
-        child: Icon(
-          Icons.add,
-          color: Colors.black,
-          size: 40,
-        ),
-      ),
-      // bottomNavigationBar: BottomNavBar(),
+      floatingActionButton: selected
+          ? mat.FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    // builder: (context) => TimeSelect(now: DateTime.now()),
+                    builder: (context) => TimeSelect(
+                        now: value!.toSingle().date, start: start, end: today),
+                  ),
+                );
+              },
+              backgroundColor: Color(0xFF3C83F6),
+              child: Icon(
+                Icons.add,
+                color: Colors.black,
+                size: 40,
+              ),
+            )
+          : null,
     );
   }
-
-  DateTime? _selectedDay;
-
-  Widget dpDialog() {
-    return DatePicker(
-      value: _selectedDay,
-      mode: PromptMode.dialog,
-      dialogTitle: const Text('Select Date').sans(),
-      stateBuilder: (date) {
-        if (date.isAfter(DateTime.now()) || date.isBefore(start)) {
-          return DateState.disabled;
-        }
-        return DateState.enabled;
-      },
-      onChanged: (day) {
-        setState(() {
-          _selectedDay = day;
-        });
-      },
-    );
-  }
-
-  Future<void> _updateCompletes() async {
-    if (updateTriggered) return;
-    List<ClockDate> clock = await dbOps("R");
-    List<DateTime> newCompletes = clock.map((c) => c.date).toList();
-    setState(() {
-      completes = newCompletes;
-      updateTriggered = true;
-    });
-  }
+  
+  // Future<void> _updateCompletes() async {
+  //   if (updateTriggered) return;
+  //   List<ClockDate> clock = await dbOps("R");
+  //   List<DateTime> newCompletes = clock.map((c) => c.date).toList();
+  //   setState(() {
+  //     completes = newCompletes;
+  //     updateTriggered = true;
+  //   });
+  // }
 
   CalendarValue? value;
   CalendarView view = CalendarView.now();
@@ -119,7 +100,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   child: const Icon(Icons.arrow_back).iconXSmall(),
                 ),
-                Text('${localizations.getMonth(view.month)} ${view.year}').sans()
+                Text('${localizations.getMonth(view.month)} ${view.year}')
+                    .sans()
                     .small()
                     .medium()
                     .center()
@@ -142,6 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onChanged: (v) {
                 setState(() {
                   value = v;
+                  selected = v != null;
                 });
               },
               selectionMode: CalendarSelectionMode.single,

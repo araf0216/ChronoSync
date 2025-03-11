@@ -1,11 +1,9 @@
-// import 'package:clockify/home.dart';
 import 'package:clockify/current.dart';
 import 'package:clockify/home.dart';
 import 'package:clockify/user.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:flutter/material.dart' as mat;
 import 'nav.dart';
-// import 'clockdb.dart';
 
 void main() {
   runApp(const MainApp());
@@ -38,7 +36,6 @@ class _MainAppState extends State<MainApp> {
         body: screens[_selectedIndex ?? 0],
         bottomNavigationBar: BottomNavBar(
           onSelect: (index) {
-            print("Index $index selected");
             setState(() {
               _selectedIndex = index;
             });

@@ -37,6 +37,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
             icon: Icon(
               shad.BootstrapIcons.personCircle,
               size: 30,
+              color: Colors.white,
             ),
             label: "User"),
       ],
@@ -48,23 +49,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
       },
       // showUnselectedLabels: false,
       // showSelectedLabels: false,
-      // backgroundColor: Color(0xFF020817),
-      backgroundColor: Colors.black,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+      backgroundColor: Color(0xFF020817),
+      // backgroundColor: Colors.black,
       shadowColor: Colors.amber,
       elevation: 20,
-      // selectedItemColor: Colors.blue,
-      // unselectedItemColor: Colors.white,
       selectedIndex: _selectedIndex,
-      // items: [
-      //   BottomNavigationBarItem(
-      //       icon: Image.asset("lib/assets/calendar.png", width: 28, height: 28, color: Colors.white,), label: "Prior"),
-      //   BottomNavigationBarItem(
-      //       icon: Image.asset("lib/assets/on-time.png", width: 32, height: 32, color: Colors.white,), label: "Current"),
-      //   BottomNavigationBarItem(icon: Icon(shad.BootstrapIcons.personCircle, size: 30,), label: "User"),
-      // ],
-      // onTap: (index) => setState(() {
-      //   _selectedIndex = index;
-      // }),
     );
   }
 }
