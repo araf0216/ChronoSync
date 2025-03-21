@@ -7,19 +7,31 @@
         {
             "name": "clockify",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "--web-browser-flag",
+                "--disable-web-security"
+            ]
         },
         {
             "name": "clockify (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "args": [
+                "--web-browser-flag",
+                "--disable-web-security"
+            ]
         },
         {
             "name": "clockify (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": [
+                "--web-browser-flag",
+                "--disable-web-security"
+            ]
         }
     ]
 }

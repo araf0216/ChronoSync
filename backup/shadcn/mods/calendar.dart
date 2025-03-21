@@ -1368,7 +1368,7 @@ class CalendarGridData {
     int firstWeekday = firstDayOfMonth.weekday;
     int daysInMonth = DateTime(year, month + 1, 0).day;
 
-    int prevMonthDays = firstWeekday - 1;
+    int prevMonthDays = firstWeekday;
     DateTime prevMonthLastDay =
         firstDayOfMonth.subtract(Duration(days: prevMonthDays));
 

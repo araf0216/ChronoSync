@@ -2,9 +2,12 @@ import 'package:clockify/clockdb.dart';
 import 'package:clockify/helpers.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:intl/intl.dart';
+import 'api.dart';
 
 class ClockTimeline extends StatefulWidget {
-  const ClockTimeline({super.key});
+
+  const ClockTimeline(
+      {super.key});
 
   @override
   State<ClockTimeline> createState() => ClockTimelineState();
@@ -12,6 +15,8 @@ class ClockTimeline extends StatefulWidget {
 
 class ClockTimelineState extends State<ClockTimeline> {
   List<ClockDate> clocks = [];
+  String user = "User";
+  String pass = "";
 
   @override
   void initState() {
@@ -75,57 +80,78 @@ class ClockTimelineState extends State<ClockTimeline> {
                               size: 20, color: Colors.blue),
                           size: ButtonSize.xSmall,
                           variance: ButtonVariance.card,
-                          onPressed: () {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return Container(
-                                  alignment: Alignment.center,
-                                  width: MediaQuery.of(context).size.width * 0.8,
-                                  child: AlertDialog(
-                                    title: Center(
-                                      child: Text(
-                                        "Confirm Check-In",
-                                        style: TextStyle(fontSize: 24),
-                                      ).h2(pad: 0).sans(),
-                                    ),
-                                    content: Center(
-                                      child: Column(
-                                        children: [
-                                          Gap(4),
-                                          Text("Confirm Time Selections").sans(),
-                                          Gap(4),
-                                          Text(DateFormat("MM/dd/yyyy").format(clocks[i].date), style: TextStyle(color: Colors.white)).sans(),
-                                          Text(
-                                            "${timeStr(clocks[i].inTime)} - ${timeStr(clocks[i].outTime)}",
-                                            style: TextStyle(color: Colors.white),
-                                          ).base().sans(),
-                                          Gap(4),
-                                          Text("No Further Changes").sans(),
-                                          Text("Beyond This Point").sans(),
-                                          Gap(4),
-                                        ],
-                                      ),
-                                    ),
-                                    actions: [
-                                      SecondaryButton(
-                                        child: Text("Cancel").sans(),
-                                        onPressed: () => Navigator.pop(context),
-                                      ),
-                                      PrimaryButton(
-                                        child: Text("OK").sans(),
-                                        onPressed: () {
-                                          // api call right here
-                                          Navigator.pop(context);
-                                        },
-                                      )
-                                    ],
-                                    actionsCenterAlign: true,
-                                  ),
-                                );
-                              },
-                            );
-                          },
+                          onPressed: clocks[i].isUploaded
+                              ? null
+                              : () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return Container(
+                                        alignment: Alignment.center,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.8,
+                                        child: AlertDialog(
+                                          title: Center(
+                                            child: Text(
+                                              "Confirm Check-In",
+                                              style:
+                                                  TextStyle(fontSize: 24),
+                                            ).h2(pad: 0).sans(),
+                                          ),
+                                          content: Center(
+                                            child: Column(
+                                              children: [
+                                                Gap(4),
+                                                Text("Confirm Time Selections")
+                                                    .sans(),
+                                                Gap(4),
+                                                Text(
+                                                  DateFormat("MM/dd/yyyy").format(clocks[i].date),
+                                                  style: TextStyle(color: Colors.white),
+                                                ).sans(),
+                                                Text(
+                                                  "${timeStr(clocks[i].inTime)} - ${timeStr(clocks[i].outTime)}",
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ).base().sans(),
+                                                Gap(4),
+                                                Text("No Further Changes").sans().semiBold(),
+                                                Text("Beyond This Point").sans().semiBold(),
+                                                Gap(4),
+                                              ],
+                                            ),
+                                          ),
+                                          actions: [
+                                            SecondaryButton(
+                                              child:
+                                                  Text("Cancel").sans(),
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                            ),
+                                            PrimaryButton(
+                                              child: Text("OK").sans(),
+                                              onPressed: () {
+                                                APIService api =
+                                                    APIService(
+                                                  date: clocks[i].date,
+                                                  inTime: clocks[i].inTime,
+                                                  outTime: clocks[i].outTime,
+                                                );
+                                                api.apiUpload();
+                                                clocks[i].isUploaded = true;
+                                                dbOps("U", clock: clocks[i]);
+                                                Navigator.pop(context);
+                                                setState(() {});
+                                              },
+                                            )
+                                          ],
+                                          actionsCenterAlign: true,
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
                         ),
                         Gap(20),
                         IconButton(
@@ -150,7 +176,12 @@ class ClockTimelineState extends State<ClockTimeline> {
                                         Text("Confirm Selected Time Deletion")
                                             .sans(),
                                         Gap(4),
-                                        Text(DateFormat("MM/dd/yyyy").format(clocks[i].date), style: TextStyle(color: Colors.white)).sans(),
+                                        Text(
+                                                DateFormat("MM/dd/yyyy")
+                                                    .format(clocks[i].date),
+                                                style: TextStyle(
+                                                    color: Colors.white))
+                                            .sans(),
                                         Text(
                                           "${timeStr(clocks[i].inTime)} - ${timeStr(clocks[i].outTime)}",
                                           style: TextStyle(color: Colors.white),

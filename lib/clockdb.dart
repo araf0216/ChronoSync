@@ -1,6 +1,5 @@
 import 'dart:async';
 // import 'dart:nativewrappers/_internal/vm/lib/ffi_patch.dart';
-
 // import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 // import 'package:flutter/widgets.dart';
@@ -14,12 +13,15 @@ class ClockDate {
   // pass in hour and minute separately
   final TimeOfDay inTime;
   final TimeOfDay outTime;
+  bool isUploaded;
 
-  ClockDate(
-      {this.id = 0,
-      required this.date,
-      required this.inTime,
-      required this.outTime});
+  ClockDate({
+    this.id = 0,
+    required this.date,
+    required this.inTime,
+    required this.outTime,
+    this.isUploaded = false,
+  });
 
   Map<String, Object?> toMap() {
     return {
@@ -28,28 +30,28 @@ class ClockDate {
       'inHour': inTime.hour,
       'inMin': inTime.minute,
       'outHour': outTime.hour,
-      'outMin': outTime.minute
+      'outMin': outTime.minute,
+      'isUploaded': isUploaded ? 1 : 0,
     };
   }
 
   @override
   String toString() {
-    return 'Clock{id: $id, date: ${date.millisecondsSinceEpoch}, inHour: ${inTime.hour}, inMin: ${inTime.minute}, outHour: ${outTime.hour}, outMin: ${outTime.minute}}';
+    return 'Clock{id: $id, date: ${date.millisecondsSinceEpoch}, inHour: ${inTime.hour}, inMin: ${inTime.minute}, outHour: ${outTime.hour}, outMin: ${outTime.minute}, isUploaded: $isUploaded}';
   }
 }
 
-Future<List<ClockDate>> dbOps(String op,
-    {ClockDate? clock, int? id}) async {
+Future<List<ClockDate>> dbOps(String op, {ClockDate? clock, int? id}) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final database = openDatabase(
     path.join(await getDatabasesPath(), 'clock_db.db'),
     onCreate: (db, version) {
       return db.execute(
-        'CREATE TABLE clocks(id INTEGER PRIMARY KEY, date INTEGER, inHour INTEGER, inMin INTEGER, outHour INTEGER, outMin INTEGER)',
+        'CREATE TABLE clocks(id INTEGER PRIMARY KEY, date INTEGER, inHour INTEGER, inMin INTEGER, outHour INTEGER, outMin INTEGER, isUploaded INTEGER)',
       );
     },
-    version: 1,
+    version: 2,
   );
 
   Future<List<ClockDate>> clocks() async {
@@ -64,13 +66,15 @@ Future<List<ClockDate>> dbOps(String op,
             'inHour': inHour as int,
             'inMin': inMin as int,
             'outHour': outHour as int,
-            'outMin': outMin as int
+            'outMin': outMin as int,
+            'isUploaded': isUploaded as int,
           } in clockMaps)
         ClockDate(
           id: id,
           date: DateTime.fromMillisecondsSinceEpoch(date),
           inTime: TimeOfDay(hour: inHour, minute: inMin),
           outTime: TimeOfDay(hour: outHour, minute: outMin),
+          isUploaded: isUploaded == 1,
         ),
     ];
   }
@@ -106,6 +110,7 @@ Future<List<ClockDate>> dbOps(String op,
       clock.toMap(),
       where: 'date = ?',
       whereArgs: [clock.date.millisecondsSinceEpoch],
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
@@ -123,6 +128,11 @@ Future<List<ClockDate>> dbOps(String op,
     case "D":
       if (id != null) {
         deleteClock(id);
+      }
+      return Future.value([]);
+    case "U":
+      if (clock != null) {
+        updateClock(clock);
       }
       return Future.value([]);
     case "R":

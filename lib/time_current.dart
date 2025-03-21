@@ -1,11 +1,10 @@
 import 'dart:async';
-
 import 'package:clockify/clockdb.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shadcn_flutter/shadcn_flutter_extension.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers.dart';
-// import 'clockdb.dart';
 
 class TimeScreen extends mat.StatefulWidget {
   final DateTime now;
@@ -119,7 +118,8 @@ class _TimeScreen extends State<TimeScreen> {
 
     return mat.Scaffold(
       floatingActionButton: mat.FloatingActionButton.extended(
-        backgroundColor: Colors.transparent,
+        elevation: 0,
+        backgroundColor: context.theme.colorScheme.background,
         onPressed: null,
         label: Switch(
           value: clockState == "In",
@@ -190,20 +190,46 @@ class _TimeScreen extends State<TimeScreen> {
           AppBar(
             alignment: Alignment.center,
             child: Text(
-              "Current Status:",
-              // "Current Build Count: $buildCount\nCurrent State Time: ${timeStr(stateTime)}",
+              "Clockify",
+              style: TextStyle(fontSize: 24),
               textAlign: TextAlign.center,
-            ).sans().h4(),
+            ).sans().h2().center(),
           ),
         ],
         child: Container(
           alignment: Alignment.topCenter,
           child: Column(
             children: [
+              Gap(20),
               Text(
-                "Clocked $clockState",
-                style: TextStyle(fontSize: 20),
-              ).h2().sans(),
+                "Current Status:",
+                // "Current Build Count: $buildCount\nCurrent State Time: ${timeStr(stateTime)}",
+                textAlign: TextAlign.center,
+              ).sans().h4(),
+              Gap(50),
+              (clockState == "Out")
+                ? Card(
+                  borderColor: Colors.blue,
+                  child: Text(
+                    "Clocked $clockState",
+                    style: TextStyle(fontSize: 20),
+                  ).h2(pad: 0).sans(),
+                )
+                : Card(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.blue.withOpacity(0.5),
+                      blurRadius: 30,
+                      spreadRadius: 5,
+                      offset: Offset(0, 0),
+                    ),
+                  ],
+                  borderColor: Colors.blue,
+                  child: Text(
+                    "Clocked $clockState",
+                    style: TextStyle(fontSize: 20),
+                  ).h2(pad: 0).sans(),
+                ),
               const Gap(50),
               IntrinsicWidth(
                 child: Column(

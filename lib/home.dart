@@ -68,22 +68,13 @@ class _HomeScreenState extends State<HomeScreen> {
           : null,
     );
   }
-  
-  // Future<void> _updateCompletes() async {
-  //   if (updateTriggered) return;
-  //   List<ClockDate> clock = await dbOps("R");
-  //   List<DateTime> newCompletes = clock.map((c) => c.date).toList();
-  //   setState(() {
-  //     completes = newCompletes;
-  //     updateTriggered = true;
-  //   });
-  // }
 
   CalendarValue? value;
   CalendarView view = CalendarView.now();
   Widget defCalendar() {
     ShadcnLocalizations localizations = ShadcnLocalizations.of(context);
     return Card(
+      borderColor: Colors.blue,
       child: IntrinsicWidth(
         child: Column(
           mainAxisSize: MainAxisSize.min,
