@@ -88,17 +88,17 @@ Future<List<ClockDate>> dbOps(String op, {ClockDate? clock, int? id}) async {
 
       if (maxId != null) {
         clock.id = maxId + 1;
-
         print("Length and ID found: ${clock.id}");
-
-        await txn.insert(
-          'clocks',
-          clock.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
       } else {
-        print("No ID");
+        clock.id = 1;
+        print("No existing ID found - Creating first with ID: [1]");
       }
+
+      await txn.insert(
+        'clocks',
+        clock.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
     });
   }
 
