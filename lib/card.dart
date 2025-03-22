@@ -1,5 +1,4 @@
-import 'dart:ui';
-
+import 'package:clockify/api.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 String user_ = "", pass_ = "";
@@ -57,8 +56,29 @@ Widget loginCard(BuildContext context, Function(String, String) setUser) {
             width: double.infinity,
             child: PrimaryButton(
               child: Text('Sign In').sans(),
-              onPressed: () {
+              onPressed: () async {
                 print("Signing in with User: $user_ & Pass: $pass_");
+                APIService api = APIService();
+                bool loggedIn = await api.apiLogin(user_: user_, pass_: pass_);
+                if (!loggedIn) {
+                  Widget buildToast(BuildContext context, ToastOverlay overlay) {
+                    return SurfaceCard(
+                      child: Basic(
+                        title: const Text('Invalid BestHR Login').sans(),
+                        trailing: PrimaryButton(
+                            size: ButtonSize.small,
+                            onPressed: () {
+                              overlay.close();
+                            },
+                            child: const Text('Close').sans()),
+                        trailingAlignment: Alignment.center,
+                      ),
+                    );
+                  }
+
+                  showToast(context: context, builder: buildToast, location: ToastLocation.bottomCenter);
+                  return;
+                }
                 setUser(user_, pass_);
                 user_ = "";
                 pass_ = "";

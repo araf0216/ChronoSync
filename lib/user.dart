@@ -17,14 +17,15 @@ class _UserScreenState extends State<UserScreen> {
   bool userSet = false;
   String user = "User";
   String pass = "";
+  Future? loading;
 
   @override
   void initState() {
     super.initState();
-    isUserSet();
+    loading = isUserSet();
   }
 
-  Future<void> isUserSet() async {
+  Future<bool> isUserSet() async {
     print("running isUserSet");
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -33,12 +34,12 @@ class _UserScreenState extends State<UserScreen> {
 
     if (user_ == null || pass_ == null) {
       print("no user vars found on device");
-      return;
+      return false;
     }
 
     if (user_ == "User" || user_ == "" || pass_ == "") {
       print("found default user vars - not signed in");
-      return;
+      return false;
     }
 
     print("Found User: $user_ & Pass: $pass_!");
@@ -48,6 +49,8 @@ class _UserScreenState extends State<UserScreen> {
       pass = pass_;
       userSet = true;
     });
+
+    return true;
   }
 
   Future<void> setUser(String user_, String pass_) async {
@@ -107,29 +110,23 @@ class _UserScreenState extends State<UserScreen> {
             ).h2().sans().center(),
             Container(
               alignment: Alignment.topRight,
-              child: Container(
-                padding: EdgeInsets.all(0),
-                decoration: BoxDecoration(
-                  border: Border.all(width: 1, color: Colors.blue),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  size: ButtonSize(1 / 3),
-                  variance: ButtonVariance.fixed,
-                  onPressed: () {
-                    showPopover(
-                      alignment: Alignment.center,
-                      context: context,
-                      builder: (context) {
-                        return userDrop(context, logoutUser, userSet);
-                      },
-                    );
-                  },
-                  icon: Icon(
-                    BootstrapIcons.threeDots,
-                    color: Colors.blue,
-                    size: 15,
-                  ),
+              child: IconButton(
+                // size: ButtonSize(1 / 3),
+                variance: ButtonVariance.fixed,
+                onPressed: () {
+                  showPopover(
+                    alignment: Alignment.center,
+                    context: context,
+                    builder: (context) {
+                      return userDrop(context, logoutUser, userSet);
+                    },
+                  );
+                },
+                icon: Icon(
+                  // BootstrapIcons.threeDots,
+                  BootstrapIcons.sliders,
+                  color: Colors.white,
+                  size: 20,
                 ),
               ),
             ),
@@ -139,8 +136,17 @@ class _UserScreenState extends State<UserScreen> {
       ],
       child: mat.Container(
         alignment: Alignment.center,
-        child: SingleChildScrollView(
-          child: !userSet ? loginCard(context, setUser) : ClockTimeline(),
+        child: FutureBuilder(
+          future: loading,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return CircularProgressIndicator();
+            }
+
+            return SingleChildScrollView(
+              child: !userSet ? loginCard(context, setUser) : ClockTimeline(),
+            );
+          },
         ),
       ),
     );

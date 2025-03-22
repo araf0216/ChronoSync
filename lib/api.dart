@@ -1,63 +1,50 @@
 import 'package:clockify/helpers.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:http/http.dart';
-// import 'data.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class APIService {
-  final DateTime date;
-  final TimeOfDay inTime;
-  final TimeOfDay outTime;
+  // final DateTime date;
+  // final TimeOfDay inTime;
+  // final TimeOfDay outTime;
 
-  APIService({required this.date, required this.inTime, required this.outTime});
+  APIService();
 
-  Future<void> apiUpload() async {
-    String dateStr = DateFormat("yyyy-MM-dd").format(date);
-    String inTimeStr = "${dateStr}T${timeStrPost(inTime)}-05:00";
-    String outTimeStr = "${dateStr}T${timeStrPost(outTime)}-05:00";
+  // APIService({required this.date, required this.inTime, required this.outTime});
 
+  final Uri loginUrl = Uri.parse("https://www.besthrcloud.com/names.nsf?Login");
+
+  final Uri formUrl = Uri.parse(
+      "https://s3.besthrcloud.com/hrcloud/Timesheet045.nsf/CreatePastCheckInCheckoutEmployee.xsp");
+
+  final Uri clockUrl = Uri.parse(
+      "https://s3.besthrcloud.com/hrcloud/Timesheet045.nsf/CreatePastCheckInCheckoutEmployee.xsp?\$\$ajaxid=view:_id1:Message");
+
+  Client client = Client();
+  Map<String, String> headers = {};
+  late Response response;
+
+  String vuid = "", cookie = "";
+
+  Future<bool> apiLogin({String? user_, String? pass_}) async {
     final prefs = await SharedPreferences.getInstance();
-    String user = prefs.getString("user") ?? "",
-        pass = prefs.getString("pass") ?? "";
+    String user = user_ ?? prefs.getString("user") ?? "",
+        pass = pass_ ?? prefs.getString("pass") ?? "";
 
     if (user.isEmpty || pass.isEmpty) {
       print("failed to find user when performing upload");
-      return;
+      return false;
     }
-
-    final Uri loginUrl =
-        Uri.parse("https://www.besthrcloud.com/names.nsf?Login");
-
-    final Uri formUrl = Uri.parse(
-        "https://s3.besthrcloud.com/hrcloud/Timesheet045.nsf/CreatePastCheckInCheckoutEmployee.xsp");
-
-    final Uri clockUrl = Uri.parse(
-        "https://s3.besthrcloud.com/hrcloud/Timesheet045.nsf/CreatePastCheckInCheckoutEmployee.xsp?\$\$ajaxid=view:_id1:Message");
 
     Map<String, String> logData = {
       "Username": user,
       "Password": pass,
     };
 
-    Map<String, String> clockData = {
-      "view:_id1:inputText1": inTimeStr,
-      "view:_id1:inputText2": outTimeStr,
-      "view:_id1:comboBox2": "Final",
-      "\$\$viewid": "vuid_v",
-      "\$\$xspsubmitid": "view:_id1:eventHandler1",
-      "view:_id1": "view:_id1",
-    };
-
-    String vuid = "", cookie = "";
-
-    Client client = Client();
-
-    Response response = await client.post(loginUrl, body: logData);
-
-    Map<String, String> headers = {};
+    response = await client.post(loginUrl, body: logData);
 
     if (response.statusCode == 302) {
       print("still redirecting");
@@ -74,12 +61,12 @@ class APIService {
 
     if (response.statusCode != 200) {
       print("full fail");
-      return;
+      return false;
     }
 
     if (headers["Cookie"] == null) {
       print("something failed");
-      return;
+      return false;
     }
 
     response = await client.get(formUrl, headers: headers);
@@ -99,12 +86,36 @@ class APIService {
     dom.Element? vuidEl = doc.getElementById("view\\:_id1__VUID");
 
     if (vuidEl == null) {
-      print("element not found");
-      return;
+      print("element not found - failed to log in");
+      return false;
     }
 
     vuid = vuidEl.attributes["value"]!;
     print(vuid);
+
+    return true;
+  }
+
+  Future<void> apiUpload({required DateTime date, required TimeOfDay inTime, required TimeOfDay outTime}) async {
+    bool loggedIn = await apiLogin();
+
+    if (!loggedIn) {
+      print("something went wrong logging in");
+      return;
+    }
+
+    String dateStr = DateFormat("yyyy-MM-dd").format(date);
+    String inTimeStr = "${dateStr}T${timeStrPost(inTime)}-05:00";
+    String outTimeStr = "${dateStr}T${timeStrPost(outTime)}-05:00";
+
+    Map<String, String> clockData = {
+      "view:_id1:inputText1": inTimeStr,
+      "view:_id1:inputText2": outTimeStr,
+      "view:_id1:comboBox2": "Final",
+      "\$\$viewid": "vuid_v",
+      "\$\$xspsubmitid": "view:_id1:eventHandler1",
+      "view:_id1": "view:_id1",
+    };
 
     clockData["\$\$viewid"] = vuid;
 

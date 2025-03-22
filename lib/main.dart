@@ -27,6 +27,7 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return ShadcnApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorSchemes.darkBlue(),
         typography: Typography.geist(),

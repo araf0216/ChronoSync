@@ -5,9 +5,7 @@ import 'package:intl/intl.dart';
 import 'api.dart';
 
 class ClockTimeline extends StatefulWidget {
-
-  const ClockTimeline(
-      {super.key});
+  const ClockTimeline({super.key});
 
   @override
   State<ClockTimeline> createState() => ClockTimelineState();
@@ -76,12 +74,40 @@ class ClockTimelineState extends State<ClockTimeline> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         IconButton(
-                          icon: Icon(BootstrapIcons.cloudUpload,
-                              size: 20, color: Colors.blue),
+                          icon: Icon(
+                            clocks[i].isUploaded
+                                ? BootstrapIcons.cloudCheck
+                                : BootstrapIcons.cloudUpload,
+                            size: 20,
+                            color: clocks[i].isUploaded
+                                ? Colors.green[400]
+                                : Colors.blue,
+                          ),
                           size: ButtonSize.xSmall,
                           variance: ButtonVariance.card,
                           onPressed: clocks[i].isUploaded
-                              ? null
+                              ? () {
+                                  Widget buildToast(BuildContext context,
+                                      ToastOverlay overlay) {
+                                    return SurfaceCard(
+                                      child: Basic(
+                                        title: const Text('Event already uploaded').sans(),
+                                        trailing: PrimaryButton(
+                                          size: ButtonSize.small,
+                                          onPressed: () {
+                                            overlay.close();
+                                          },
+                                          child: const Text('Close').sans(),
+                                        ),
+                                        trailingAlignment: Alignment.center,
+                                      ),
+                                    );
+                                  }
+                                  showToast(
+                                      context: context,
+                                      builder: buildToast,
+                                      location: ToastLocation.bottomCenter);
+                                }
                               : () {
                                   showDialog(
                                     context: context,
@@ -95,8 +121,7 @@ class ClockTimelineState extends State<ClockTimeline> {
                                           title: Center(
                                             child: Text(
                                               "Confirm Check-In",
-                                              style:
-                                                  TextStyle(fontSize: 24),
+                                              style: TextStyle(fontSize: 24),
                                             ).h2(pad: 0).sans(),
                                           ),
                                           content: Center(
@@ -107,8 +132,10 @@ class ClockTimelineState extends State<ClockTimeline> {
                                                     .sans(),
                                                 Gap(4),
                                                 Text(
-                                                  DateFormat("MM/dd/yyyy").format(clocks[i].date),
-                                                  style: TextStyle(color: Colors.white),
+                                                  DateFormat("MM/dd/yyyy")
+                                                      .format(clocks[i].date),
+                                                  style: TextStyle(
+                                                      color: Colors.white),
                                                 ).sans(),
                                                 Text(
                                                   "${timeStr(clocks[i].inTime)} - ${timeStr(clocks[i].outTime)}",
@@ -116,32 +143,56 @@ class ClockTimelineState extends State<ClockTimeline> {
                                                       color: Colors.white),
                                                 ).base().sans(),
                                                 Gap(4),
-                                                Text("No Further Changes").sans().semiBold(),
-                                                Text("Beyond This Point").sans().semiBold(),
+                                                Text("No Further Changes")
+                                                    .sans()
+                                                    .semiBold(),
+                                                Text("Beyond This Point")
+                                                    .sans()
+                                                    .semiBold(),
                                                 Gap(4),
                                               ],
                                             ),
                                           ),
                                           actions: [
                                             SecondaryButton(
-                                              child:
-                                                  Text("Cancel").sans(),
+                                              child: Text("Cancel").sans(),
                                               onPressed: () =>
                                                   Navigator.pop(context),
                                             ),
                                             PrimaryButton(
                                               child: Text("OK").sans(),
                                               onPressed: () {
-                                                APIService api =
-                                                    APIService(
+                                                APIService api = APIService();
+                                                api.apiUpload(
                                                   date: clocks[i].date,
                                                   inTime: clocks[i].inTime,
                                                   outTime: clocks[i].outTime,
                                                 );
-                                                api.apiUpload();
                                                 clocks[i].isUploaded = true;
                                                 dbOps("U", clock: clocks[i]);
                                                 Navigator.pop(context);
+                                                Widget buildToast(
+                                                    BuildContext context,
+                                                    ToastOverlay overlay) {
+                                                  return SurfaceCard(
+                                                    child: Basic(
+                                                      title: const Text('Clock-In Event has been uploaded').sans(),
+                                                      trailing: PrimaryButton(
+                                                        size:ButtonSize.small,
+                                                        onPressed: () {
+                                                          overlay.close();
+                                                        },
+                                                        child: const Text('Close').sans(),
+                                                      ),
+                                                      trailingAlignment: Alignment.center,
+                                                    ),
+                                                  );
+                                                }
+                                                showToast(
+                                                  context: context,
+                                                  builder: buildToast,
+                                                  location: ToastLocation.bottomCenter,
+                                                );
                                                 setState(() {});
                                               },
                                             )

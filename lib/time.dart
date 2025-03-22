@@ -1,15 +1,20 @@
 import 'package:clockify/clockdb.dart';
+import 'package:clockify/helpers.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-// import 'clockdb.dart';
 
 class TimeSelect extends mat.StatefulWidget {
   final DateTime now;
   final DateTime start;
   final DateTime end;
+  final Function() unselect;
 
   const TimeSelect(
-      {super.key, required this.now, required this.start, required this.end});
+      {super.key,
+      required this.now,
+      required this.start,
+      required this.end,
+      required this.unselect});
 
   @override
   State<TimeSelect> createState() => _TimeSelect();
@@ -35,7 +40,7 @@ class _TimeSelect extends State<TimeSelect> {
   void setClock() {
     DateTime date = mat.DateUtils.dateOnly(widget.now);
 
-    Navigator.pop(context);
+    widget.unselect();
 
     // Actual working database insert of new ClockDate object
     dbOps("C", clock: ClockDate(date: date, inTime: inTime, outTime: outTime))
@@ -63,16 +68,19 @@ class _TimeSelect extends State<TimeSelect> {
           mat.FloatingActionButtonLocation.centerFloat,
       body: Scaffold(
         headers: [
-          AppBar(
-            leading: [
-              IconButton.secondary(
-                onPressed: () => Navigator.pop(context),
-                size: ButtonSize(0.8),
-                icon: Icon(Icons.arrow_back_ios_new),
+          mat.AppBar(
+            leading: Container(
+              alignment: Alignment.center,
+              child: IconButton.ghost(
+                onPressed: () => widget.unselect(),
+                alignment: Alignment.center,
+                icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                density: ButtonDensity.iconDense,
               ),
-            ],
-            height: 35,
-          ),
+            ),
+            title: Text(dateStr(widget.now), textAlign: TextAlign.center, style: TextStyle(color: Colors.white)).h4().sans(),
+            centerTitle: true,
+          )
         ],
         child: Container(
           alignment: Alignment.topCenter,

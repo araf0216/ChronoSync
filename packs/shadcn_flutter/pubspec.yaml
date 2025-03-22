@@ -1,0 +1,46 @@
+name: shadcn_flutter
+description: "Beautifully designed components from Shadcn/UI is now available for Flutter"
+version: 0.0.28
+homepage: "https://github.com/sunarya-thito/shadcn_flutter"
+documentation: "https://sunarya-thito.github.io/shadcn_flutter/"
+repository: "https://github.com/sunarya-thito/shadcn_flutter"
+issue_tracker: "https://github.com/sunarya-thito/shadcn_flutter/issues"
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: ">=3.29.0"
+
+dependencies:
+  email_validator: ^3.0.0
+  flutter:
+    sdk: flutter
+  skeletonizer: ^1.4.2
+  syntax_highlight: ^0.4.0
+  country_flags: ^3.0.0
+  phonecodes: ^0.0.3
+  cross_file: ^0.3.4+2
+  image: ^4.2.0
+  web: ^1.0.0
+  data_widget: ^0.0.2
+  gap: ^3.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  icon_font_generator: ^4.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  uses-material-design: true
+
+topics:
+  - widgets
+  - user-interface
+  - design
+  - components
+  - shadcn-ui
+

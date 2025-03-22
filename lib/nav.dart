@@ -52,7 +52,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
       labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
       backgroundColor: Color(0xFF020817),
       // backgroundColor: Colors.black,
-      shadowColor: Colors.amber,
       elevation: 20,
       selectedIndex: _selectedIndex,
     );

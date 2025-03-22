@@ -1,9 +1,6 @@
 import 'package:clockify/time.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-// import 'calendar.dart' as cal;
-// import 'package:sqflite/sqflite.dart';
-// import 'clockdb.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,60 +10,134 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  DateTime start = DateTime.utc(2025, 1, 1);
-  DateTime today = DateTime.now();
+  DateTime start = DateTime.utc(2025, 1, 1), today = DateTime.now();
+  DateTime? selectDate;
   bool selected = false;
-  List<DateTime> completes = [
-    DateTime(2025, 2, 14),
-    DateTime(2025, 2, 9),
-    DateTime(2025, 3, 1)
-  ];
 
   bool updateTriggered = false;
 
+  void unselectDate() {
+    setState(() {
+      selectDate = null;
+    });
+  }
+
+  void s(String sa, TimeOfDay t) {
+    print(sa);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return mat.Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Scaffold(
-          headers: [
-            AppBar(
-              title: Text(
-                "Select New Clock-In Date",
-                style: TextStyle(fontSize: 24),
-              ).h2().sans().center(),
-              alignment: Alignment.center,
-            ),
-          ],
-          child: Container(
-            alignment: Alignment.topCenter,
-            margin: EdgeInsets.only(top: 50),
-            child: defCalendar(),
-          ),
-        ),
-      ),
-      floatingActionButton: selected
-          ? mat.FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    // builder: (context) => TimeSelect(now: DateTime.now()),
-                    builder: (context) => TimeSelect(
-                        now: value!.toSingle().date, start: start, end: today),
+    return selectDate != null
+        ? TimeSelect(now: selectDate!, start: start, end: today, unselect: unselectDate)
+        // ? mat.Scaffold(
+        //     floatingActionButton: mat.FloatingActionButton.extended(
+        //       backgroundColor: Colors.transparent,
+        //       onPressed: null,
+        //       label: PrimaryButton(
+        //         // onPressed: () => setClock(),
+        //         trailing: Icon(Icons.check_circle_outline_rounded),
+        //         child: Text(
+        //           "Submit",
+        //           style: TextStyle(fontSize: 18),
+        //         ).h4().sans(),
+        //       ),
+        //     ),
+        //     floatingActionButtonLocation:
+        //         mat.FloatingActionButtonLocation.centerFloat,
+        //     body: Scaffold(
+        //       headers: [
+        //         AppBar(
+        //           leading: [
+        //             IconButton.secondary(
+        //               onPressed: () => unselectDate(),
+        //               size: ButtonSize(0.8),
+        //               icon: Icon(Icons.arrow_back_ios_new),
+        //             ),
+        //           ],
+        //           height: 35,
+        //         ),
+        //       ],
+        //       child: Container(
+        //         alignment: Alignment.topCenter,
+        //         child: Column(
+        //           children: [
+        //             Text(
+        //               "Select Clock-In/Out Times",
+        //               style: TextStyle(fontSize: 24),
+        //             ).h2().sans(),
+        //             const Gap(50),
+        //             IntrinsicWidth(
+        //               child: Column(
+        //                 children: [
+        //                   Row(
+        //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //                     spacing: 20,
+        //                     children: [
+        //                       Text("Clock-In: ").h4().sans(),
+        //                       TimeDial(io: "In", setTime: s),
+        //                     ],
+        //                   ),
+        //                   const Gap(16),
+        //                   Row(
+        //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //                     spacing: 20,
+        //                     children: [
+        //                       Text("Clock-Out: ").h4().sans(),
+        //                       TimeDial(io: "Out", setTime: s),
+        //                     ],
+        //                   ),
+        //                 ],
+        //               ),
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //     ),
+        //   )
+        : mat.Scaffold(
+            backgroundColor: Colors.black,
+            body: Center(
+              child: Scaffold(
+                headers: [
+                  AppBar(
+                    title: Text(
+                      "Select New Clock-In Date",
+                      style: TextStyle(fontSize: 24),
+                    ).h2().sans().center(),
+                    alignment: Alignment.center,
                   ),
-                );
-              },
-              backgroundColor: Color(0xFF3C83F6),
-              child: Icon(
-                Icons.add,
-                color: Colors.black,
-                size: 40,
+                ],
+                child: Container(
+                  alignment: Alignment.topCenter,
+                  margin: EdgeInsets.only(top: 50),
+                  child: defCalendar(),
+                ),
               ),
-            )
-          : null,
-    );
+            ),
+            floatingActionButton: selected
+                ? mat.FloatingActionButton(
+                    onPressed: () {
+                      setState(() {
+                        selectDate = value!.toSingle().date;
+                      });
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     // builder: (context) => TimeSelect(now: DateTime.now()),
+                      //     builder: (context) => TimeSelect(now: value!.toSingle().date, start: start, end: today),
+                      //   ),
+                      // );
+                    },
+                    backgroundColor: Color(0xFF3C83F6),
+                    child: Icon(
+                      Icons.add,
+                      color: Colors.black,
+                      size: 40,
+                    ),
+                  )
+                : null,
+          );
   }
 
   CalendarValue? value;

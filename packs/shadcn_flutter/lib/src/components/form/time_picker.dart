@@ -165,7 +165,8 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
         children: [
           Positioned.fill(
             child: TextField(
-              padding: EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5),
+              keyboardType: TextInputType.number,
+              padding: const EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5),
               textAlign: TextAlign.center,
               controller: controller,
               style: theme.typography.x4Large,

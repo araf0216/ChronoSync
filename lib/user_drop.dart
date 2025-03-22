@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 Widget userDrop(BuildContext context, Function() logOut, bool signedIn) {
@@ -6,14 +7,57 @@ Widget userDrop(BuildContext context, Function() logOut, bool signedIn) {
       if (signedIn) MenuLabel(child: Text('My Account').sans()),
       if (signedIn) MenuDivider(),
       MenuButton(
-        trailing: Icon(BootstrapIcons.sliders),
-        child: Text('Settings').sans(),
-      ),
-      MenuDivider(),
-      MenuButton(
         trailing: Icon(BootstrapIcons.github),
         child: Text('GitHub').sans(),
+        onPressed: (context) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: Center(
+                    child: Text("Source", textAlign: TextAlign.center)
+                        .h3()
+                        .sans()),
+                content: Column(
+                  children: [
+                    Center(
+                      child: TextButton(
+                        onPressed: () async {
+                          Widget buildToast(BuildContext context, ToastOverlay overlay) {
+                            return SurfaceCard(
+                              child: Basic(
+                                subtitle: const Text('Link copied to clipboard'),
+                                subtitleAlignment: Alignment.center,
+                              ),
+                            );
+                          }
+                          showToast(
+                            context: context,
+                            builder: buildToast,
+                            location: ToastLocation.bottomCenter,
+                          );
+                          await Clipboard.setData(ClipboardData(
+                              text: "https://github.com/araf0216/Clockify"));
+                        },
+                        child: Text(
+                          "https://github.com/araf0216/Clockify",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            decoration: TextDecoration.underline,
+                            fontSize: 16,
+                          ),
+                        ).sans(),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
+      if (signedIn) MenuDivider(),
       if (signedIn)
         MenuButton(
           trailing: Icon(BootstrapIcons.exclamationCircle, color: Colors.red),
