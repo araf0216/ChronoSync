@@ -42,32 +42,22 @@ class _UserScreenState extends State<UserScreen> {
       return false;
     }
 
-    print("Found User: $user_ & Pass: $pass_!");
+    print("Found User: [$user_]!");
 
-    setState(() {
-      user = user_;
-      pass = pass_;
-      userSet = true;
-    });
+    await setUser(user_, pass_);
 
     return true;
   }
 
   Future<void> setUser(String user_, String pass_) async {
-    print("running setUser from user.dart");
-    print("received $user_ - $pass_");
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print("storing user to device storage");
 
     if (user_ == "User" || user_ == "" || pass_ == "") {
-      await prefs.remove("user");
-      await prefs.remove("pass");
       return;
     }
 
-    print(
-        "setting the given strings to sharedprefs: User - [$user_] & Pass - [$pass_]");
-
+    // storing non-null user info to device storage
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("user", user_);
     await prefs.setString("pass", pass_);
 
@@ -79,14 +69,12 @@ class _UserScreenState extends State<UserScreen> {
   }
 
   Future<void> logoutUser() async {
-    print("logging out the following user:");
+    print("logging out current user");
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String user_ = prefs.getString("user") ?? "User",
         pass_ = prefs.getString("pass") ?? "";
-
-    print("User: [$user_] - Pass: [$pass_]");
 
     await prefs.remove("user");
     await prefs.remove("pass");
@@ -111,7 +99,6 @@ class _UserScreenState extends State<UserScreen> {
             Container(
               alignment: Alignment.topRight,
               child: IconButton(
-                // size: ButtonSize(1 / 3),
                 variance: ButtonVariance.fixed,
                 onPressed: () {
                   showPopover(
@@ -123,7 +110,6 @@ class _UserScreenState extends State<UserScreen> {
                   );
                 },
                 icon: Icon(
-                  // BootstrapIcons.threeDots,
                   BootstrapIcons.sliders,
                   color: Colors.white,
                   size: 20,

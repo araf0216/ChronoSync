@@ -24,14 +24,9 @@ Widget loginCard(BuildContext context, Function(String, String) setUser) {
             onChanged: (value) {
               user_ = value;
             },
-            onTap: () {
-              print("$user_ - $pass_");
-            },
             onTapOutside: (event) {
-              print("$user_ - $pass_");
               FocusScope.of(context).requestFocus(FocusNode());
             },
-            onSubmitted: (value) => print("$user_ - $pass_"),
           ),
           SizedBox(height: 16),
           Text('Password').semiBold().small().sans(),
@@ -42,14 +37,9 @@ Widget loginCard(BuildContext context, Function(String, String) setUser) {
             onChanged: (value) {
               pass_ = value;
             },
-            onTap: () {
-              print("$user_ - $pass_");
-            },
             onTapOutside: (event) {
-              print("$user_ - $pass_");
               FocusScope.of(context).requestFocus(FocusNode());
             },
-            onSubmitted: (value) => print("$user_ - $pass_"),
           ),
           SizedBox(height: 24),
           SizedBox(
@@ -57,7 +47,7 @@ Widget loginCard(BuildContext context, Function(String, String) setUser) {
             child: PrimaryButton(
               child: Text('Sign In').sans(),
               onPressed: () async {
-                print("Signing in with User: $user_ & Pass: $pass_");
+                print("Signing in User: [$user_]");
                 APIService api = APIService();
                 bool loggedIn = await api.apiLogin(user_: user_, pass_: pass_);
                 if (!loggedIn) {

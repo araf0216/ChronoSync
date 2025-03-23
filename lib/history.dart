@@ -22,7 +22,7 @@ class ClockTimelineState extends State<ClockTimeline> {
     getClocks();
   }
 
-  void getClocks() async {
+  Future<void> getClocks() async {
     List<ClockDate> clocks_ = await dbOps("R");
 
     if (clocks_.isEmpty) {
@@ -35,10 +35,10 @@ class ClockTimelineState extends State<ClockTimeline> {
     }
   }
 
-  void deleteClock(int id) async {
+  Future<void> deleteClock(int id) async {
     await dbOps("D", id: id);
-    getClocks();
-    setState(() {});
+    await getClocks();
+    // setState(() {});
   }
 
   @override
@@ -85,13 +85,15 @@ class ClockTimelineState extends State<ClockTimeline> {
                           ),
                           size: ButtonSize.xSmall,
                           variance: ButtonVariance.card,
-                          onPressed: clocks[i].isUploaded
+                          onPressed: !clocks[i].isUploaded
                               ? () {
                                   Widget buildToast(BuildContext context,
                                       ToastOverlay overlay) {
                                     return SurfaceCard(
                                       child: Basic(
-                                        title: const Text('Event already uploaded').sans(),
+                                        title:
+                                            const Text('Event already uploaded')
+                                                .sans(),
                                         trailing: PrimaryButton(
                                           size: ButtonSize.small,
                                           onPressed: () {
@@ -103,6 +105,7 @@ class ClockTimelineState extends State<ClockTimeline> {
                                       ),
                                     );
                                   }
+
                                   showToast(
                                       context: context,
                                       builder: buildToast,
@@ -161,30 +164,37 @@ class ClockTimelineState extends State<ClockTimeline> {
                                             ),
                                             PrimaryButton(
                                               child: Text("OK").sans(),
-                                              onPressed: () {
+                                              onPressed: () async {
+                                                Navigator.pop(context);
+                                                context = Navigator.of(context).context;
+
                                                 APIService api = APIService();
-                                                api.apiUpload(
+                                                await api.apiUpload(
                                                   date: clocks[i].date,
                                                   inTime: clocks[i].inTime,
                                                   outTime: clocks[i].outTime,
                                                 );
-                                                clocks[i].isUploaded = true;
-                                                dbOps("U", clock: clocks[i]);
-                                                Navigator.pop(context);
-                                                Widget buildToast(
-                                                    BuildContext context,
-                                                    ToastOverlay overlay) {
+
+                                                clocks[i].isUploaded = false;
+                                                await dbOps("U", clock: clocks[i]);
+
+                                                await getClocks();
+
+                                                Widget buildToast(BuildContext context, ToastOverlay overlay) {
                                                   return SurfaceCard(
                                                     child: Basic(
                                                       title: const Text('Clock-In Event has been uploaded').sans(),
                                                       trailing: PrimaryButton(
-                                                        size:ButtonSize.small,
+                                                        size: ButtonSize.small,
                                                         onPressed: () {
                                                           overlay.close();
                                                         },
-                                                        child: const Text('Close').sans(),
+                                                        child:
+                                                            const Text('Close')
+                                                                .sans(),
                                                       ),
-                                                      trailingAlignment: Alignment.center,
+                                                      trailingAlignment:
+                                                          Alignment.center,
                                                     ),
                                                   );
                                                 }
@@ -193,7 +203,6 @@ class ClockTimelineState extends State<ClockTimeline> {
                                                   builder: buildToast,
                                                   location: ToastLocation.bottomCenter,
                                                 );
-                                                setState(() {});
                                               },
                                             )
                                           ],
@@ -206,8 +215,7 @@ class ClockTimelineState extends State<ClockTimeline> {
                         ),
                         Gap(20),
                         IconButton(
-                          icon: Icon(BootstrapIcons.trash,
-                              size: 20, color: Colors.red),
+                          icon: Icon(BootstrapIcons.trash, size: 20, color: Colors.red),
                           size: ButtonSize.xSmall,
                           variance: ButtonVariance.card,
                           onPressed: () {
@@ -247,9 +255,34 @@ class ClockTimelineState extends State<ClockTimeline> {
                                     ),
                                     DestructiveButton(
                                       child: Text("Delete").sans(),
-                                      onPressed: () {
-                                        deleteClock(clocks[i].id);
+                                      onPressed: () async {
                                         Navigator.pop(context);
+                                        context = Navigator.of(context).context;
+
+                                        await deleteClock(clocks[i].id);
+
+                                        Widget buildToast(BuildContext context, ToastOverlay overlay) {
+                                          return SurfaceCard(
+                                            child: Basic(
+                                              title: const Text('Clock-In Event has been deleted').sans(),
+                                              trailing: PrimaryButton(
+                                                size: ButtonSize.small,
+                                                onPressed: () {
+                                                  overlay.close();
+                                                },
+                                                child:
+                                                    const Text('Close').sans(),
+                                              ),
+                                              trailingAlignment:
+                                                  Alignment.center,
+                                            ),
+                                          );
+                                        }
+                                        showToast(
+                                          context: context,
+                                          builder: buildToast,
+                                          location: ToastLocation.bottomCenter,
+                                        );
                                       },
                                     )
                                   ],

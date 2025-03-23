@@ -7,13 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class APIService {
-  // final DateTime date;
-  // final TimeOfDay inTime;
-  // final TimeOfDay outTime;
 
   APIService();
-
-  // APIService({required this.date, required this.inTime, required this.outTime});
 
   final Uri loginUrl = Uri.parse("https://www.besthrcloud.com/names.nsf?Login");
 
@@ -35,7 +30,7 @@ class APIService {
         pass = pass_ ?? prefs.getString("pass") ?? "";
 
     if (user.isEmpty || pass.isEmpty) {
-      print("failed to find user when performing upload");
+      print("failed to find user when logging in");
       return false;
     }
 
@@ -74,11 +69,9 @@ class APIService {
     cookie = response.headers["set-cookie"] != null
         ? response.headers["set-cookie"]!.split(";")[0]
         : "";
-    print(cookie);
 
     cookie =
         cookie != "" ? "${headers["Cookie"]}; $cookie" : headers["Cookie"]!;
-    print("Updated cookie variable:\n$cookie");
     headers["Cookie"] = cookie;
 
     dom.Document doc = html.parse(response.body);
