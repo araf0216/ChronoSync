@@ -19,7 +19,7 @@ migrate_working_dir/
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
-#.vscode/
+.vscode/
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -47,7 +47,4 @@ app.*.map.json
 /flutter-sdk
 android/build/reports/problems/problems-report.html
 commandlinetools.zip
-android/app/.cxx/Debug/1iq1q6ki/arm64-v8a/configure_fingerprint.bin
-android/app/.cxx/Debug/1iq1q6ki/armeabi-v7a/configure_fingerprint.bin
-android/app/.cxx/Debug/1iq1q6ki/x86/configure_fingerprint.bin
-android/app/.cxx/Debug/1iq1q6ki/x86_64/configure_fingerprint.bin
+android/app/.cxx
