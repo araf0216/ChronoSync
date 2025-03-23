@@ -73,11 +73,11 @@ class _UserScreenState extends State<UserScreen> {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String user_ = prefs.getString("user") ?? "User",
-        pass_ = prefs.getString("pass") ?? "";
+    String? user_ = prefs.getString("user"),
+        pass_ = prefs.getString("pass");
 
-    await prefs.remove("user");
-    await prefs.remove("pass");
+    if (user_ != null) await prefs.remove("user");
+    if (pass_ != null) await prefs.remove("pass");
 
     setState(() {
       user = "User";
