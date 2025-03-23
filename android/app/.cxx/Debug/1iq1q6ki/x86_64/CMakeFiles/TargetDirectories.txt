@@ -1,2 +1,0 @@
-H:/CodeS/Code/Project Clockify/clockify/android/app/.cxx/Debug/1iq1q6ki/x86_64/CMakeFiles/edit_cache.dir
-H:/CodeS/Code/Project Clockify/clockify/android/app/.cxx/Debug/1iq1q6ki/x86_64/CMakeFiles/rebuild_cache.dir
