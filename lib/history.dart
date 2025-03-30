@@ -85,7 +85,7 @@ class ClockTimelineState extends State<ClockTimeline> {
                           ),
                           size: ButtonSize.xSmall,
                           variance: ButtonVariance.card,
-                          onPressed: !clocks[i].isUploaded
+                          onPressed: clocks[i].isUploaded
                               ? () {
                                   Widget buildToast(BuildContext context,
                                       ToastOverlay overlay) {
@@ -166,7 +166,8 @@ class ClockTimelineState extends State<ClockTimeline> {
                                               child: Text("OK").sans(),
                                               onPressed: () async {
                                                 Navigator.pop(context);
-                                                context = Navigator.of(context).context;
+                                                context = Navigator.of(context)
+                                                    .context;
 
                                                 APIService api = APIService();
                                                 await api.apiUpload(
@@ -175,15 +176,20 @@ class ClockTimelineState extends State<ClockTimeline> {
                                                   outTime: clocks[i].outTime,
                                                 );
 
-                                                clocks[i].isUploaded = false;
-                                                await dbOps("U", clock: clocks[i]);
+                                                clocks[i].isUploaded = true;
+                                                await dbOps("U",
+                                                    clock: clocks[i]);
 
                                                 await getClocks();
 
-                                                Widget buildToast(BuildContext context, ToastOverlay overlay) {
+                                                Widget buildToast(
+                                                    BuildContext context,
+                                                    ToastOverlay overlay) {
                                                   return SurfaceCard(
                                                     child: Basic(
-                                                      title: const Text('Clock-In Event has been uploaded').sans(),
+                                                      title: const Text(
+                                                              'Clock-In Event has been uploaded')
+                                                          .sans(),
                                                       trailing: PrimaryButton(
                                                         size: ButtonSize.small,
                                                         onPressed: () {
@@ -198,10 +204,12 @@ class ClockTimelineState extends State<ClockTimeline> {
                                                     ),
                                                   );
                                                 }
+
                                                 showToast(
                                                   context: context,
                                                   builder: buildToast,
-                                                  location: ToastLocation.bottomCenter,
+                                                  location: ToastLocation
+                                                      .bottomCenter,
                                                 );
                                               },
                                             )
@@ -215,7 +223,8 @@ class ClockTimelineState extends State<ClockTimeline> {
                         ),
                         Gap(20),
                         IconButton(
-                          icon: Icon(BootstrapIcons.trash, size: 20, color: Colors.red),
+                          icon: Icon(BootstrapIcons.trash,
+                              size: 20, color: Colors.red),
                           size: ButtonSize.xSmall,
                           variance: ButtonVariance.card,
                           onPressed: () {
@@ -261,10 +270,13 @@ class ClockTimelineState extends State<ClockTimeline> {
 
                                         await deleteClock(clocks[i].id);
 
-                                        Widget buildToast(BuildContext context, ToastOverlay overlay) {
+                                        Widget buildToast(BuildContext context,
+                                            ToastOverlay overlay) {
                                           return SurfaceCard(
                                             child: Basic(
-                                              title: const Text('Clock-In Event has been deleted').sans(),
+                                              title: const Text(
+                                                      'Clock-In Event has been deleted')
+                                                  .sans(),
                                               trailing: PrimaryButton(
                                                 size: ButtonSize.small,
                                                 onPressed: () {
@@ -278,6 +290,7 @@ class ClockTimelineState extends State<ClockTimeline> {
                                             ),
                                           );
                                         }
+
                                         showToast(
                                           context: context,
                                           builder: buildToast,

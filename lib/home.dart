@@ -22,79 +22,10 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void s(String sa, TimeOfDay t) {
-    print(sa);
-  }
-
   @override
   Widget build(BuildContext context) {
     return selectDate != null
         ? TimeSelect(now: selectDate!, start: start, end: today, unselect: unselectDate)
-        // ? mat.Scaffold(
-        //     floatingActionButton: mat.FloatingActionButton.extended(
-        //       backgroundColor: Colors.transparent,
-        //       onPressed: null,
-        //       label: PrimaryButton(
-        //         // onPressed: () => setClock(),
-        //         trailing: Icon(Icons.check_circle_outline_rounded),
-        //         child: Text(
-        //           "Submit",
-        //           style: TextStyle(fontSize: 18),
-        //         ).h4().sans(),
-        //       ),
-        //     ),
-        //     floatingActionButtonLocation:
-        //         mat.FloatingActionButtonLocation.centerFloat,
-        //     body: Scaffold(
-        //       headers: [
-        //         AppBar(
-        //           leading: [
-        //             IconButton.secondary(
-        //               onPressed: () => unselectDate(),
-        //               size: ButtonSize(0.8),
-        //               icon: Icon(Icons.arrow_back_ios_new),
-        //             ),
-        //           ],
-        //           height: 35,
-        //         ),
-        //       ],
-        //       child: Container(
-        //         alignment: Alignment.topCenter,
-        //         child: Column(
-        //           children: [
-        //             Text(
-        //               "Select Clock-In/Out Times",
-        //               style: TextStyle(fontSize: 24),
-        //             ).h2().sans(),
-        //             const Gap(50),
-        //             IntrinsicWidth(
-        //               child: Column(
-        //                 children: [
-        //                   Row(
-        //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //                     spacing: 20,
-        //                     children: [
-        //                       Text("Clock-In: ").h4().sans(),
-        //                       TimeDial(io: "In", setTime: s),
-        //                     ],
-        //                   ),
-        //                   const Gap(16),
-        //                   Row(
-        //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //                     spacing: 20,
-        //                     children: [
-        //                       Text("Clock-Out: ").h4().sans(),
-        //                       TimeDial(io: "Out", setTime: s),
-        //                     ],
-        //                   ),
-        //                 ],
-        //               ),
-        //             ),
-        //           ],
-        //         ),
-        //       ),
-        //     ),
-        //   )
         : mat.Scaffold(
             backgroundColor: Colors.black,
             body: Center(
@@ -110,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
                 child: Container(
                   alignment: Alignment.topCenter,
-                  margin: EdgeInsets.only(top: 50),
+                  margin: EdgeInsets.only(top: 32),
                   child: defCalendar(),
                 ),
               ),
@@ -121,13 +52,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       setState(() {
                         selectDate = value!.toSingle().date;
                       });
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     // builder: (context) => TimeSelect(now: DateTime.now()),
-                      //     builder: (context) => TimeSelect(now: value!.toSingle().date, start: start, end: today),
-                      //   ),
-                      // );
                     },
                     backgroundColor: Color(0xFF3C83F6),
                     child: Icon(

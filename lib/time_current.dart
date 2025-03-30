@@ -99,11 +99,11 @@ class _TimeScreen extends State<TimeScreen> {
       print("inTime is ${inTime == null} | outTime is ${outTime == null}");
       return;
     }
-    
+
     DateTime date = DateTime(widget.now.year, widget.now.month, widget.now.day);
 
     print("Shits here and shits fine");
-    
+
     TimeOfDay intime = inTime!, outtime = outTime!;
 
     dbOps("C", clock: ClockDate(date: date, inTime: intime, outTime: outtime))
@@ -141,7 +141,10 @@ class _TimeScreen extends State<TimeScreen> {
                       child: mat.Column(
                         children: [
                           Text("Confirm Clocked In Time:").sans(),
-                          Text("$inTimeStr - $outTimeStr", style: TextStyle(color: Colors.white)).h4().sans(),
+                          Text("$inTimeStr - $outTimeStr",
+                                  style: TextStyle(color: Colors.white))
+                              .h4()
+                              .sans(),
                         ],
                       ),
                     ),
@@ -208,28 +211,28 @@ class _TimeScreen extends State<TimeScreen> {
               ).sans().h4(),
               Gap(50),
               (clockState == "Out")
-                ? Card(
-                  borderColor: Colors.blue,
-                  child: Text(
-                    "Clocked $clockState",
-                    style: TextStyle(fontSize: 20),
-                  ).h2(pad: 0).sans(),
-                )
-                : Card(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.blue.withOpacity(0.5),
-                      blurRadius: 30,
-                      spreadRadius: 5,
-                      offset: Offset(0, 0),
+                  ? Card(
+                      borderColor: Colors.blue,
+                      child: Text(
+                        "Clocked $clockState",
+                        style: TextStyle(fontSize: 20),
+                      ).h2(pad: 0).sans(),
+                    )
+                  : Card(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.blue.withOpacity(0.5),
+                          blurRadius: 30,
+                          spreadRadius: 5,
+                          offset: Offset(0, 0),
+                        ),
+                      ],
+                      borderColor: Colors.blue,
+                      child: Text(
+                        "Clocked $clockState",
+                        style: TextStyle(fontSize: 20),
+                      ).h2(pad: 0).sans(),
                     ),
-                  ],
-                  borderColor: Colors.blue,
-                  child: Text(
-                    "Clocked $clockState",
-                    style: TextStyle(fontSize: 20),
-                  ).h2(pad: 0).sans(),
-                ),
               const Gap(50),
               IntrinsicWidth(
                 child: Column(
@@ -317,7 +320,7 @@ class _TimeDial extends State<TimeDial> {
         dialogTitle: Text(
           "Select Clock-${widget.io} Time",
           style: TextStyle(fontSize: 20),
-        ).h2().sans(),
+        ).h2(pad: 0).sans(),
         onChanged: (value) {
           widget.updateStateTime(value ?? TimeOfDay.now());
           widget.setTime(widget.io);

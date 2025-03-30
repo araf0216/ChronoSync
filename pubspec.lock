@@ -233,7 +233,7 @@ packages:
     source: hosted
     version: "1.1.25"
   leak_tracker:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: leak_tracker
       sha256: "6bb818ecbdffe216e81182c2f0714a2e62b593f4a4f13098713ff1685dfb6ab0"

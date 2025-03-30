@@ -107,7 +107,8 @@ class TimePicker extends StatelessWidget {
       onChanged: onChanged,
       builder: (context, value) {
         return Text(localizations.formatTimeOfDay(value,
-            use24HourFormat: use24HourFormat, showSeconds: showSeconds)).sans();
+                use24HourFormat: use24HourFormat, showSeconds: showSeconds))
+            .sans();
       },
       enabled: enabled,
       mode: mode,
@@ -166,7 +167,8 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
           Positioned.fill(
             child: TextField(
               keyboardType: TextInputType.number,
-              padding: const EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5),
+              padding:
+                  const EdgeInsets.only(left: 0, right: 0, top: 5, bottom: 5),
               textAlign: TextAlign.center,
               controller: controller,
               style: theme.typography.x4Large,
@@ -174,6 +176,9 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
                 FilteringTextInputFormatter.digitsOnly,
                 const _TimeFormatter(),
               ],
+              onTapOutside: (event) {
+                FocusScope.of(context).requestFocus(FocusNode());
+              },
             ).sans(),
           ),
           Positioned(
@@ -188,7 +193,10 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
   Widget _buildSeparator(BuildContext context) {
     final theme = Theme.of(context);
     final scaling = theme.scaling;
-    return const Text(':').x5Large().sans().withPadding(horizontal: 8 * scaling);
+    return const Text(':')
+        .x5Large()
+        .sans()
+        .withPadding(horizontal: 8 * scaling);
   }
 
   void _onChanged() {
@@ -235,7 +243,9 @@ class _TimePickerDialogState extends State<TimePickerDialog> {
     int initialHour = widget.initialValue?.hour ?? 0;
     int initialMinute = widget.initialValue?.minute ?? 0;
     int initialSecond = widget.initialValue?.second ?? 0;
-    if (!widget.use24HourFormat && (initialHour > 12 || initialHour == 0) && initialHour <= 23) {
+    if (!widget.use24HourFormat &&
+        (initialHour > 12 || initialHour == 0) &&
+        initialHour <= 23) {
       _pm = initialHour > 12 ? true : _pm;
       initialHour = (initialHour - 12).abs();
     }

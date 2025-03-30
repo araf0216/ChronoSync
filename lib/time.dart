@@ -78,7 +78,11 @@ class _TimeSelect extends State<TimeSelect> {
                 density: ButtonDensity.iconDense,
               ),
             ),
-            title: Text(dateStr(widget.now), textAlign: TextAlign.center, style: TextStyle(color: Colors.white)).h4().sans(),
+            title: Text(dateStr(widget.now),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.white))
+                .h4()
+                .sans(),
             centerTitle: true,
           )
         ],
@@ -147,7 +151,7 @@ class _TimeDial extends State<TimeDial> {
         dialogTitle: Text(
           "Select Clock-${widget.io} Time",
           style: TextStyle(fontSize: 20),
-        ).h2().sans(),
+        ).h2(pad: 0).sans(),
         onChanged: (value) {
           setState(() {
             pressed = false;
