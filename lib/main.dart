@@ -34,7 +34,7 @@ class _MainAppState extends State<MainApp> {
         radius: 0.5,
       ),
       home: mat.Scaffold(
-        body: screens[_selectedIndex ?? 0],
+        body: screens[_selectedIndex ?? 1],
         bottomNavigationBar: BottomNavBar(
           onSelect: (index) {
             setState(() {
