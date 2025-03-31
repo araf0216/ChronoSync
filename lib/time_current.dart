@@ -193,7 +193,7 @@ class _TimeScreen extends State<TimeScreen> {
           AppBar(
             alignment: Alignment.center,
             child: Text(
-              "Clockify",
+              "ChronoSync",
               style: TextStyle(fontSize: 24),
               textAlign: TextAlign.center,
             ).sans().h2().center(),
