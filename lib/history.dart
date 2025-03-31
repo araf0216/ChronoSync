@@ -37,8 +37,8 @@ class ClockTimelineState extends State<ClockTimeline> {
 
   Future<void> deleteClock(int id) async {
     await dbOps("D", id: id);
-    await getClocks();
-    setState(() {});
+    getClocks();
+    // setState(() {});
   }
 
   @override
