@@ -15,3 +15,6 @@
    - User-Friendly Interface: Designed with user experience in mind, the app makes clocking in and out quick, easy, and hassle-free.
 
 This project serves as a perfect solution to enhance productivity and simplify time-tracking processes with robust, secure, and easy-to-use technology.
+
+### Privacy Policy
+This application does **not** collect any information from the user. The only information stored about the user is the BestHR Cloud login which is kept on the local device and in no way accessible by any developer or third-party entities. Additionally, this user information is erased from the local device storage upon user sign-out.
