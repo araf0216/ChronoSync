@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 // import 'dart:nativewrappers/_internal/vm/lib/ffi_patch.dart';
 // import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
@@ -44,18 +45,35 @@ class ClockDate {
 Future<List<ClockDate>> dbOps(String op, {ClockDate? clock, int? id}) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final database = openDatabase(
-    path.join(await getDatabasesPath(), 'clock_db.db'),
-    onCreate: (db, version) {
-      return db.execute(
-        'CREATE TABLE clocks(id INTEGER PRIMARY KEY, date INTEGER, inHour INTEGER, inMin INTEGER, outHour INTEGER, outMin INTEGER, isUploaded INTEGER)',
-      );
-    },
-    version: 2,
-  );
+  Future<Database> getDatabase() async {
+    final database = openDatabase(
+      path.join(await getDatabasesPath(), 'clock_db.db'),
+      onCreate: (db, version) {
+        return db.execute(
+          'CREATE TABLE clocks(id INTEGER PRIMARY KEY, date INTEGER, inHour INTEGER, inMin INTEGER, outHour INTEGER, outMin INTEGER, isUploaded INTEGER)',
+        );
+      },
+      version: 2,
+    );
+
+    return database;
+  }
+
+  Future<bool> checkDatabase() async {
+    final File dbFile =
+        File(path.join(await getDatabasesPath(), 'clock_db.db'));
+
+    return await dbFile.exists();
+  }
 
   Future<List<ClockDate>> clocks() async {
-    final db = await database;
+    final dbExists = await checkDatabase();
+
+    if (!dbExists) {
+      return [];
+    }
+
+    final db = await getDatabase();
 
     final List<Map<String, Object?>> clockMaps = await db.query('clocks');
 
@@ -80,7 +98,7 @@ Future<List<ClockDate>> dbOps(String op, {ClockDate? clock, int? id}) async {
   }
 
   Future<void> insertClock(ClockDate clock) async {
-    final db = await database;
+    final db = await getDatabase();
 
     await db.transaction((txn) async {
       int? maxId = Sqflite.firstIntValue(
@@ -88,10 +106,10 @@ Future<List<ClockDate>> dbOps(String op, {ClockDate? clock, int? id}) async {
 
       if (maxId != null) {
         clock.id = maxId + 1;
-        print("Length and ID found: ${clock.id}");
+        // print("Length and ID found: ${clock.id}");
       } else {
         clock.id = 1;
-        print("No existing ID found - Creating first with ID: [1]");
+        // print("No existing ID found - Creating first with ID: [1]");
       }
 
       await txn.insert(
@@ -103,7 +121,7 @@ Future<List<ClockDate>> dbOps(String op, {ClockDate? clock, int? id}) async {
   }
 
   Future<void> updateClock(ClockDate clock) async {
-    final db = await database;
+    final db = await getDatabase();
 
     await db.update(
       'clocks',
@@ -115,7 +133,7 @@ Future<List<ClockDate>> dbOps(String op, {ClockDate? clock, int? id}) async {
   }
 
   Future<void> deleteClock(int id) async {
-    final db = await database;
+    final db = await getDatabase();
 
     await db.delete(
       'clocks',
@@ -124,7 +142,22 @@ Future<List<ClockDate>> dbOps(String op, {ClockDate? clock, int? id}) async {
     );
   }
 
+  Future<void> deleteDB() async {
+    final dbExists = await checkDatabase();
+
+    if (!dbExists) {
+      return;
+    }
+
+    final db = await getDatabase();
+
+    await db.delete("clocks");
+  }
+
   switch (op) {
+    case "DELETE":
+      deleteDB();
+      return Future.value([]);
     case "D":
       if (id != null) {
         deleteClock(id);

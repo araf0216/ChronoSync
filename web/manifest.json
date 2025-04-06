@@ -1,6 +1,6 @@
 {
-    "name": "clockify",
-    "short_name": "clockify",
+    "name": "chronosync",
+    "short_name": "chronosync",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

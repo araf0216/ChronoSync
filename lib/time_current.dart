@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:clockify/clockdb.dart';
+import 'package:chronosync/clockdb.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:shadcn_flutter/shadcn_flutter_extension.dart';
@@ -55,13 +55,13 @@ class _TimeScreen extends State<TimeScreen> {
       setState(() {
         inTime = stateTime;
         inTimeStr = timeStr(inTime!);
-        print("Clock In Time Set: $inTime");
+        // print("Clock In Time Set: $inTime");
       });
     } else if (io == "Out") {
       setState(() {
         outTime = stateTime;
         outTimeStr = timeStr(outTime!);
-        print("Clock Out Time Set: $outTime");
+        // print("Clock Out Time Set: $outTime");
       });
     }
   }
@@ -80,14 +80,14 @@ class _TimeScreen extends State<TimeScreen> {
       int inMinute = inTime!.minute;
       await prefs.setInt("inHour", inHour);
       await prefs.setInt("inMinute", inMinute);
-      print("Clock State Saved: Hour -> $inHour, Minute -> $inMinute");
+      // print("Clock State Saved: Hour -> $inHour, Minute -> $inMinute");
     } else if (clockState == "Out") {
       final int? inHour = prefs.getInt("inHour");
       final int? inMinute = prefs.getInt("inMinute");
 
       inTime ??= TimeOfDay(hour: inHour!, minute: inMinute!);
 
-      print("Clock State Removed: Hour -> $inHour, Minute -> $inMinute");
+      // print("Clock State Removed: Hour -> $inHour, Minute -> $inMinute");
       await prefs.remove("inHour");
       await prefs.remove("inMinute");
     }
@@ -96,19 +96,19 @@ class _TimeScreen extends State<TimeScreen> {
   // Actual working database insert of new ClockDate object
   void setClock() {
     if (inTime == null || outTime == null) {
-      print("inTime is ${inTime == null} | outTime is ${outTime == null}");
+      // print("inTime is ${inTime == null} | outTime is ${outTime == null}");
       return;
     }
 
     DateTime date = DateTime(widget.now.year, widget.now.month, widget.now.day);
 
-    print("Shits here and shits fine");
+    // print("Shits here and shits fine");
 
     TimeOfDay intime = inTime!, outtime = outTime!;
 
     dbOps("C", clock: ClockDate(date: date, inTime: intime, outTime: outtime))
         .then((v) {
-      print("New Clock-In on $date from $intime to $outtime");
+      // print("New Clock-In on $date from $intime to $outtime");
     });
   }
 
@@ -163,8 +163,7 @@ class _TimeScreen extends State<TimeScreen> {
                           // upload to database or straight to api call
                           setClockState();
                           setClock();
-                          print(
-                              "New clock from $inTimeStr - $outTimeStr uploaded and synced to database");
+                          // print("New clock from $inTimeStr - $outTimeStr uploaded and synced to database");
                           setState(() {
                             inTime = null;
                             outTime = null;

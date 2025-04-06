@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shad;
+import 'package:shadcn_flutter/shadcn_flutter_extension.dart';
 
 class BottomNavBar extends StatefulWidget {
   final Function? onSelect;
@@ -18,27 +18,61 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return NavigationBar(
       destinations: [
         NavigationDestination(
-            icon: Image.asset(
-              "lib/assets/calendar.png",
-              width: 28,
-              height: 28,
-              color: Colors.white,
-            ),
+            icon: _selectedIndex == 0
+              ? Container(
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.secondary,
+                  borderRadius: BorderRadius.all(Radius.circular(10))
+                ),
+                child: ImageIcon(
+                  AssetImage("lib/assets/calendar.png"),
+                  size: 28,
+                  color: context.theme.colorScheme.secondaryForeground,
+                ).withMargin(all: 10),
+              )
+              : ImageIcon(
+                AssetImage("lib/assets/calendar.png"),
+                size: 28,
+                color: Colors.white,
+              ),
             label: "Prior"),
         NavigationDestination(
-            icon: Image.asset(
-              "lib/assets/on-time.png",
-              width: 32,
-              height: 32,
-              color: Colors.white,
-            ),
+            icon: _selectedIndex == 1
+              ? Container(
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.secondary,
+                  borderRadius: BorderRadius.all(Radius.circular(10))
+                ),
+                child: ImageIcon(
+                  AssetImage("lib/assets/on-time.png"),
+                  size: 32,
+                  color: context.theme.colorScheme.secondaryForeground
+                ).withMargin(all: 8),
+              )
+              : ImageIcon(
+                AssetImage("lib/assets/on-time.png"),
+                size: 32,
+                color: Colors.white,
+              ),
             label: "Current"),
         NavigationDestination(
-            icon: Icon(
-              shad.BootstrapIcons.personCircle,
-              size: 30,
-              color: Colors.white,
-            ),
+            icon: _selectedIndex == 2
+              ? Container(
+                decoration: BoxDecoration(
+                  color: context.theme.colorScheme.secondary,
+                  borderRadius: BorderRadius.all(Radius.circular(10))
+                ),
+                child: Icon(
+                  shad.BootstrapIcons.personCircle,
+                  size: 30,
+                  color: context.theme.colorScheme.secondaryForeground
+                ).withMargin(all: 8),
+              )
+              : Icon(
+                shad.BootstrapIcons.personCircle,
+                size: 30,
+                color: Colors.white,
+              ),
             label: "User"),
       ],
       onDestinationSelected: (value) {
@@ -47,13 +81,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
         });
         widget.onSelect?.call(value);
       },
-      // showUnselectedLabels: false,
-      // showSelectedLabels: false,
       labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
       backgroundColor: Color(0xFF020817),
-      // backgroundColor: Colors.black,
+      indicatorColor: Color(0xFF020817),
       elevation: 20,
       selectedIndex: _selectedIndex,
+      overlayColor: WidgetStateColor.fromMap({WidgetState.any: Colors.transparent}),
     );
   }
 }

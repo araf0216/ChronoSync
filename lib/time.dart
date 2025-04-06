@@ -1,5 +1,5 @@
-import 'package:clockify/clockdb.dart';
-import 'package:clockify/helpers.dart';
+import 'package:chronosync/clockdb.dart';
+import 'package:chronosync/helpers.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
@@ -45,7 +45,7 @@ class _TimeSelect extends State<TimeSelect> {
     // Actual working database insert of new ClockDate object
     dbOps("C", clock: ClockDate(date: date, inTime: inTime, outTime: outTime))
         .then((v) {
-      print("New Clock-In on $date from $inTime to $outTime");
+      // print("New Clock-In on $date from $inTime to $outTime");
     });
   }
 

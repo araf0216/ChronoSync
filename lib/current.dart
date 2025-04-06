@@ -1,4 +1,4 @@
-import 'package:clockify/time_current.dart';
+import 'package:chronosync/time_current.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
@@ -13,6 +13,7 @@ class _CurrentScreenState extends State<CurrentScreen> {
   bool value = false;
   @override
   Widget build(BuildContext context) {
-    return TimeScreen(now: DateTime.now(), start: DateTime(2025, 1, 1), end: DateTime.now());
+    return TimeScreen(
+        now: DateTime.now(), start: DateTime(2025, 1, 1), end: DateTime.now());
   }
 }

@@ -1,4 +1,4 @@
-import 'package:clockify/helpers.dart';
+import 'package:chronosync/helpers.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:http/http.dart';
 import 'package:html/dom.dart' as dom;
@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class APIService {
-
   APIService();
 
   final Uri loginUrl = Uri.parse("https://www.besthrcloud.com/names.nsf?Login");
@@ -30,7 +29,7 @@ class APIService {
         pass = pass_ ?? prefs.getString("pass") ?? "";
 
     if (user.isEmpty || pass.isEmpty) {
-      print("failed to find user when logging in");
+      // print("failed to find user when logging in");
       return false;
     }
 
@@ -42,11 +41,11 @@ class APIService {
     response = await client.post(loginUrl, body: logData);
 
     if (response.statusCode == 302) {
-      print("still redirecting");
+      // print("still redirecting");
 
       cookie = response.headers["set-cookie"] ?? cookie;
       cookie = cookie.split(";")[0];
-      print("Cookie: $cookie");
+      // print("Cookie: $cookie");
       headers["Cookie"] = cookie;
 
       String redirUrl = response.headers["location"]!;
@@ -55,12 +54,12 @@ class APIService {
     }
 
     if (response.statusCode != 200) {
-      print("full fail");
+      // print("full fail");
       return false;
     }
 
     if (headers["Cookie"] == null) {
-      print("something failed");
+      // print("something failed");
       return false;
     }
 
@@ -79,21 +78,24 @@ class APIService {
     dom.Element? vuidEl = doc.getElementById("view\\:_id1__VUID");
 
     if (vuidEl == null) {
-      print("element not found - failed to log in");
+      // print("element not found - failed to log in");
       return false;
     }
 
     vuid = vuidEl.attributes["value"]!;
-    print(vuid);
+    // print(vuid);
 
     return true;
   }
 
-  Future<void> apiUpload({required DateTime date, required TimeOfDay inTime, required TimeOfDay outTime}) async {
+  Future<void> apiUpload(
+      {required DateTime date,
+      required TimeOfDay inTime,
+      required TimeOfDay outTime}) async {
     bool loggedIn = await apiLogin();
 
     if (!loggedIn) {
-      print("something went wrong logging in");
+      // print("something went wrong logging in");
       return;
     }
 
@@ -112,12 +114,12 @@ class APIService {
 
     clockData["\$\$viewid"] = vuid;
 
-    print("Ready to clock in for:");
-    print(inTimeStr);
-    print(outTimeStr);
+    // print("Ready to clock in for:");
+    // print(inTimeStr);
+    // print(outTimeStr);
 
     response = await client.post(clockUrl, body: clockData, headers: headers);
 
-    print(response.statusCode);
+    // print(response.statusCode);
   }
 }

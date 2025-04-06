@@ -1,6 +1,6 @@
-import 'package:clockify/current.dart';
-import 'package:clockify/home.dart';
-import 'package:clockify/user.dart';
+import 'package:chronosync/current.dart';
+import 'package:chronosync/home.dart';
+import 'package:chronosync/user.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:flutter/material.dart' as mat;
 import 'nav.dart';

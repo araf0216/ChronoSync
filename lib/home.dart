@@ -1,6 +1,7 @@
-import 'package:clockify/time.dart';
+import 'package:chronosync/time.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shadcn_flutter/shadcn_flutter_extension.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,7 +26,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return selectDate != null
-        ? TimeSelect(now: selectDate!, start: start, end: today, unselect: unselectDate)
+        ? TimeSelect(
+            now: selectDate!, start: start, end: today, unselect: unselectDate)
         : mat.Scaffold(
             backgroundColor: Colors.black,
             body: Center(
@@ -53,10 +55,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         selectDate = value!.toSingle().date;
                       });
                     },
-                    backgroundColor: Color(0xFF3C83F6),
+                    backgroundColor: context.theme.colorScheme.primary,
                     child: Icon(
                       Icons.add,
-                      color: Colors.black,
+                      color: context.theme.colorScheme.primaryForeground,
                       size: 40,
                     ),
                   )

@@ -1,7 +1,7 @@
-name: clockify
+name: chronosync
 description: A new Flutter project.
 publish_to: 'none'
-version: 0.1.0
+version: 1.0.0
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -83,6 +83,8 @@ flutter:
     - lib/assets/on-time.png
     - lib/assets/calendar.png
     - lib/assets/splash.png
+    - lib/assets/lawL.png
+    - lib/assets/log-out.png
   uses-material-design: true
 
 flutter_native_splash:

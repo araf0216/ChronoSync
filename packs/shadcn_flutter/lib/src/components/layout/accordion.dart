@@ -23,7 +23,7 @@ class _AccordionState extends State<Accordion> {
     final accTheme = ComponentTheme.maybeOf<AccordionTheme>(context);
     return Data.inherit(
         data: this,
-        child: IntrinsicWidth(
+        child: OutlinedContainer(
           child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -35,8 +35,8 @@ class _AccordionState extends State<Accordion> {
                       height: accTheme?.dividerHeight ?? 1 * scaling,
                     )),
                 const Divider(),
-              ]),
-        ));
+              ]).withPadding(horizontal: 24, vertical: 16),
+        ).withMargin(horizontal: 32));
   }
 }
 
