@@ -22,6 +22,7 @@ class TabPane<T> extends StatefulWidget {
   final Widget child;
   final double? barHeight;
   const TabPane({
+    super.key,
     // required this.children,
     required this.items,
     required this.itemBuilder,

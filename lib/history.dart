@@ -56,121 +56,183 @@ class ClockTimelineState extends State<ClockTimeline> {
     }
 
     return clocks.isEmpty
-      ? Text(
-        "Your Clock-In Events Will Appear Here.",
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 20
-        ),
-      ).sans().withPadding(horizontal: 20)
-      : Container(
-        padding: EdgeInsets.only(left: 32, right: 32),
-        child: Timeline(
-          altTimeLocation: true,
-          data: [
-            for (var i = clocks.length - 1; i >= 0; i--)
-              TimelineData(
-                time: Text(dateStr(clocks[i].date)).sans(),
-                title: Text(dateStr(clocks[i].date))
-                    .sans(),
-                content: SurfaceCard(
-                  child: Basic(
-                    title: const Text('Check-In Event Created',
-                            style: TextStyle(height: 1.15))
-                        .sans(),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(DateFormat("EEE, MMM dd, yyyy")
-                                .format(clocks[i].date))
+        ? Text(
+            "Your Clock-In Events Will Appear Here.",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 20),
+          ).sans().withPadding(horizontal: 20)
+        : Container(
+            padding: EdgeInsets.only(left: 32, right: 32),
+            child: Timeline(
+              altTimeLocation: true,
+              data: [
+                for (var i = clocks.length - 1; i >= 0; i--)
+                  TimelineData(
+                    time: Text(dateStr(clocks[i].date)).sans(),
+                    title: Text(dateStr(clocks[i].date)).sans(),
+                    content: SurfaceCard(
+                      child: Basic(
+                        title: const Text('Check-In Event Created',
+                                style: TextStyle(height: 1.15))
                             .sans(),
-                        Text(
-                          "${timeStr(clocks[i].inTime)} - ${timeStr(clocks[i].outTime)}",
-                          style: TextStyle(color: Colors.white),
-                        ).small().sans(),
-                      ],
-                    ),
-                    trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              clocks[i].isUploaded
-                                  ? BootstrapIcons.cloudCheck
-                                  : BootstrapIcons.cloudUpload,
-                              size: 20,
-                              color: clocks[i].isUploaded
-                                  ? Colors.green[400]
-                                  : Colors.blue,
-                            ),
-                            size: ButtonSize.xSmall,
-                            variance: ButtonVariance.card,
-                            onPressed: () {
-                              if (clocks[i].isUploaded) {
-                                Widget buildToast(
-                                    BuildContext context, ToastOverlay overlay) {
-                                  return SurfaceCard(
-                                    child: Basic(
-                                      title: const Text('Event already uploaded')
-                                          .sans(),
-                                      trailing: PrimaryButton(
-                                        size: ButtonSize.small,
-                                        onPressed: () {
-                                          overlay.close();
-                                        },
-                                        child: const Text('Close').sans(),
-                                      ),
-                                      trailingAlignment: Alignment.center,
-                                    ),
-                                  );
-                                }
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(DateFormat("EEE, MMM dd, yyyy")
+                                    .format(clocks[i].date))
+                                .sans(),
+                            Text(
+                              "${timeStr(clocks[i].inTime)} - ${timeStr(clocks[i].outTime)}",
+                              style: TextStyle(color: Colors.white),
+                            ).small().sans(),
+                          ],
+                        ),
+                        trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: Icon(
+                                  clocks[i].isUploaded
+                                      ? BootstrapIcons.cloudCheck
+                                      : BootstrapIcons.cloudUpload,
+                                  size: 20,
+                                  color: clocks[i].isUploaded
+                                      ? Colors.green[400]
+                                      : Colors.blue,
+                                ),
+                                size: ButtonSize.xSmall,
+                                variance: ButtonVariance.card,
+                                onPressed: () {
+                                  if (clocks[i].isUploaded) {
+                                    showToast(
+                                      context: context,
+                                      builder: buildToast('Event already uploaded.', true),
+                                      location: ToastLocation.bottomCenter,
+                                    );
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return Container(
+                                          alignment: Alignment.center,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.8,
+                                          child: AlertDialog(
+                                            title: Center(
+                                              child: Text(
+                                                "Confirm Check-In",
+                                                style: TextStyle(fontSize: 24),
+                                              ).h2(pad: 0).sans(),
+                                            ),
+                                            content: Center(
+                                              child: Column(
+                                                children: [
+                                                  Gap(4),
+                                                  Text("Confirm Time Selections")
+                                                      .sans(),
+                                                  Gap(4),
+                                                  Text(
+                                                    DateFormat("MM/dd/yyyy")
+                                                        .format(clocks[i].date),
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ).sans(),
+                                                  Text(
+                                                    "${timeStr(clocks[i].inTime)} - ${timeStr(clocks[i].outTime)}",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ).base().sans(),
+                                                  Gap(4),
+                                                  Text("No Further Changes")
+                                                      .sans()
+                                                      .semiBold(),
+                                                  Text("Beyond This Point")
+                                                      .sans()
+                                                      .semiBold(),
+                                                  Gap(4),
+                                                ],
+                                              ),
+                                            ),
+                                            actions: [
+                                              SecondaryButton(
+                                                child: Text("Cancel").sans(),
+                                                onPressed: () =>
+                                                    Navigator.pop(context),
+                                              ),
+                                              PrimaryButton(
+                                                child: Text("OK").sans(),
+                                                onPressed: () async {
+                                                  Navigator.pop(context);
+                                                  context = Navigator.of(context).context;
 
-                                showToast(
+                                                  APIService api = APIService();
+                                                  await api.apiUpload(
+                                                    date: clocks[i].date,
+                                                    inTime: clocks[i].inTime,
+                                                    outTime: clocks[i].outTime,
+                                                  );
+
+                                                  clocks[i].isUploaded = true;
+                                                  await dbOps("U",
+                                                      clock: clocks[i]);
+
+                                                  await getClocks();
+
+                                                  if (!context.mounted) return;
+                                                  showToast(
+                                                    context: context,
+                                                    builder: buildToast('Clock-In Event has been uploaded.', true),
+                                                    location: ToastLocation.bottomCenter,
+                                                  );
+                                                },
+                                              )
+                                            ],
+                                            actionsCenterAlign: true,
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  }
+                                },
+                              ),
+                              Gap(20),
+                              IconButton(
+                                icon: Icon(BootstrapIcons.trash,
+                                    size: 20, color: Colors.red),
+                                size: ButtonSize.xSmall,
+                                variance: ButtonVariance.card,
+                                onPressed: () {
+                                  showDialog(
                                     context: context,
-                                    builder: buildToast,
-                                    location: ToastLocation.bottomCenter);
-                              } else {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return Container(
-                                      alignment: Alignment.center,
-                                      width:
-                                          MediaQuery.of(context).size.width * 0.8,
-                                      child: AlertDialog(
+                                    builder: (context) {
+                                      return AlertDialog(
                                         title: Center(
                                           child: Text(
-                                            "Confirm Check-In",
+                                            "Delete Check-In",
                                             style: TextStyle(fontSize: 24),
                                           ).h2(pad: 0).sans(),
                                         ),
                                         content: Center(
                                           child: Column(
                                             children: [
-                                              Gap(4),
-                                              Text("Confirm Time Selections")
+                                              Text("Confirm Selected Time Deletion")
                                                   .sans(),
                                               Gap(4),
                                               Text(
-                                                DateFormat("MM/dd/yyyy")
-                                                    .format(clocks[i].date),
-                                                style: TextStyle(
-                                                    color: Colors.white),
-                                              ).sans(),
+                                                      DateFormat("MM/dd/yyyy")
+                                                          .format(
+                                                              clocks[i].date),
+                                                      style: TextStyle(
+                                                          color: Colors.white))
+                                                  .sans(),
                                               Text(
                                                 "${timeStr(clocks[i].inTime)} - ${timeStr(clocks[i].outTime)}",
                                                 style: TextStyle(
                                                     color: Colors.white),
                                               ).base().sans(),
-                                              Gap(4),
-                                              Text("No Further Changes")
-                                                  .sans()
-                                                  .semiBold(),
-                                              Text("Beyond This Point")
-                                                  .sans()
-                                                  .semiBold(),
-                                              Gap(4),
                                             ],
                                           ),
                                         ),
@@ -180,154 +242,35 @@ class ClockTimelineState extends State<ClockTimeline> {
                                             onPressed: () =>
                                                 Navigator.pop(context),
                                           ),
-                                          PrimaryButton(
-                                            child: Text("OK").sans(),
+                                          DestructiveButton(
+                                            child: Text("Delete").sans(),
                                             onPressed: () async {
                                               Navigator.pop(context);
-                                              context =
-                                                  Navigator.of(context).context;
+                                              context = Navigator.of(context).context;
 
-                                              APIService api = APIService();
-                                              await api.apiUpload(
-                                                date: clocks[i].date,
-                                                inTime: clocks[i].inTime,
-                                                outTime: clocks[i].outTime,
-                                              );
+                                              await deleteClock(clocks[i].id);
 
-                                              clocks[i].isUploaded = true;
-                                              await dbOps("U", clock: clocks[i]);
-
-                                              await getClocks();
-
-                                              Widget buildToast(
-                                                  BuildContext context,
-                                                  ToastOverlay overlay) {
-                                                return SurfaceCard(
-                                                  child: Basic(
-                                                    title: const Text(
-                                                            'Clock-In Event has been uploaded')
-                                                        .sans(),
-                                                    trailing: PrimaryButton(
-                                                      size: ButtonSize.small,
-                                                      onPressed: () {
-                                                        overlay.close();
-                                                      },
-                                                      child: const Text('Close')
-                                                          .sans(),
-                                                    ),
-                                                    trailingAlignment:
-                                                        Alignment.center,
-                                                  ),
-                                                );
-                                              }
-
+                                              if (!context.mounted) return;
                                               showToast(
                                                 context: context,
-                                                builder: buildToast,
-                                                location:
-                                                    ToastLocation.bottomCenter,
+                                                builder: buildToast('Clock-In Event Has Been Deleted.', true),
+                                                location: ToastLocation.bottomCenter,
                                               );
                                             },
                                           )
                                         ],
                                         actionsCenterAlign: true,
-                                      ),
-                                    );
-                                  },
-                                );
-                              }
-                            },
-                          ),
-                          Gap(20),
-                          IconButton(
-                            icon: Icon(BootstrapIcons.trash,
-                                size: 20, color: Colors.red),
-                            size: ButtonSize.xSmall,
-                            variance: ButtonVariance.card,
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    title: Center(
-                                      child: Text(
-                                        "Delete Check-In",
-                                        style: TextStyle(fontSize: 24),
-                                      ).h2(pad: 0).sans(),
-                                    ),
-                                    content: Center(
-                                      child: Column(
-                                        children: [
-                                          Text("Confirm Selected Time Deletion")
-                                              .sans(),
-                                          Gap(4),
-                                          Text(
-                                                  DateFormat("MM/dd/yyyy")
-                                                      .format(clocks[i].date),
-                                                  style: TextStyle(
-                                                      color: Colors.white))
-                                              .sans(),
-                                          Text(
-                                            "${timeStr(clocks[i].inTime)} - ${timeStr(clocks[i].outTime)}",
-                                            style: TextStyle(color: Colors.white),
-                                          ).base().sans(),
-                                        ],
-                                      ),
-                                    ),
-                                    actions: [
-                                      SecondaryButton(
-                                        child: Text("Cancel").sans(),
-                                        onPressed: () => Navigator.pop(context),
-                                      ),
-                                      DestructiveButton(
-                                        child: Text("Delete").sans(),
-                                        onPressed: () async {
-                                          Navigator.pop(context);
-                                          context = Navigator.of(context).context;
-
-                                          await deleteClock(clocks[i].id);
-
-                                          Widget buildToast(BuildContext context,
-                                              ToastOverlay overlay) {
-                                            return SurfaceCard(
-                                              child: Basic(
-                                                title: const Text(
-                                                        'Clock-In Event has been deleted')
-                                                    .sans(),
-                                                trailing: PrimaryButton(
-                                                  size: ButtonSize.small,
-                                                  onPressed: () {
-                                                    overlay.close();
-                                                  },
-                                                  child:
-                                                      const Text('Close').sans(),
-                                                ),
-                                                trailingAlignment:
-                                                    Alignment.center,
-                                              ),
-                                            );
-                                          }
-
-                                          showToast(
-                                            context: context,
-                                            builder: buildToast,
-                                            location: ToastLocation.bottomCenter,
-                                          );
-                                        },
-                                      )
-                                    ],
-                                    actionsCenterAlign: true,
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                          ),
-                        ]),
+                              ),
+                            ]),
+                      ),
+                    ),
                   ),
-                ),
-              ),
-          ],
-        ),
-      );
+              ],
+            ),
+          );
   }
 }

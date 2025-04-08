@@ -180,10 +180,10 @@ class ColorShades implements Color, ColorSwatch {
   Color get _primary => _colors[500]!;
 
   @override
-  int get alpha => _primary.alpha;
+  int get alpha => (_primary.a * 255).toInt();
 
   @override
-  int get blue => _primary.blue;
+  int get blue => (_primary.b * 255).toInt();
 
   @override
   double computeLuminance() {
@@ -191,16 +191,16 @@ class ColorShades implements Color, ColorSwatch {
   }
 
   @override
-  int get green => _primary.green;
+  int get green => (_primary.g * 255).toInt();
 
   @override
-  double get opacity => _primary.opacity;
+  double get opacity => _primary.a;
 
   @override
-  int get red => _primary.red;
+  int get red => (_primary.r * 255).toInt();
 
   @override
-  int get value => _primary.value;
+  int get value => _primary.toARGB32();
 
   @override
   ColorShades withAlpha(int a) {
@@ -217,7 +217,7 @@ class ColorShades implements Color, ColorSwatch {
     // calculate the difference between the current blue value and the new value
     int delta = b - blue;
     for (final key in shadeValues) {
-      int safe = (_colors[key]!.blue + delta).clamp(0, 255);
+      int safe = ((_colors[key]!.b * 255).toInt() + delta).clamp(0, 255);
       colors[key] = _colors[key]!.withBlue(safe);
     }
     return ColorShades._direct(colors);
@@ -229,7 +229,7 @@ class ColorShades implements Color, ColorSwatch {
     // calculate the difference between the current green value and the new value
     int delta = g - green;
     for (final key in shadeValues) {
-      int safe = (_colors[key]!.green + delta).clamp(0, 255);
+      int safe = ((_colors[key]!.g * 255).toInt() + delta).clamp(0, 255);
       colors[key] = _colors[key]!.withGreen(safe);
     }
     return ColorShades._direct(colors);
@@ -250,7 +250,7 @@ class ColorShades implements Color, ColorSwatch {
     // calculate the difference between the current red value and the new value
     int delta = r - red;
     for (final key in shadeValues) {
-      int safe = (_colors[key]!.red + delta).clamp(0, 255);
+      int safe = ((_colors[key]!.r * 255).toInt() + delta).clamp(0, 255);
       colors[key] = _colors[key]!.withRed(safe);
     }
     return ColorShades._direct(colors);
@@ -308,7 +308,7 @@ class ColorShades implements Color, ColorSwatch {
 }
 
 String hexFromColor(Color color) {
-  return '#${color.value.toRadixString(16).toUpperCase()}';
+  return '#${color.toARGB32().toRadixString(16).toUpperCase()}';
 }
 
 class ColorScheme implements ChartColorScheme {

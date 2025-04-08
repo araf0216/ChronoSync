@@ -88,9 +88,9 @@ class ControlledColorInput extends StatelessWidget
 
 String colorToHex(Color color, [bool showAlpha = true]) {
   if (showAlpha) {
-    return '#${color.value.toRadixString(16)}';
+    return '#${color.toARGB32().toRadixString(16)}';
   } else {
-    return '#${color.value.toRadixString(16).substring(2)}';
+    return '#${color.toARGB32().toRadixString(16).substring(2)}';
   }
 }
 
@@ -916,15 +916,16 @@ class _ColorPickerSetState extends State<ColorPickerSet> {
     ColorDerivative color = widget.color;
     var rgbColor = color.toColor();
     if (widget.showAlpha) {
-      _hexController.text = '#${rgbColor.value.toRadixString(16)}';
+      _hexController.text = '#${rgbColor.toARGB32().toRadixString(16)}';
     } else {
-      _hexController.text = '#${rgbColor.value.toRadixString(16).substring(2)}';
+      _hexController.text =
+          '#${rgbColor.toARGB32().toRadixString(16).substring(2)}';
     }
     switch (widget.mode) {
       case ColorPickerMode.rgb:
-        _aController.text = rgbColor.red.toString();
-        _bController.text = rgbColor.green.toString();
-        _cController.text = rgbColor.blue.toString();
+        _aController.text = (rgbColor.r * 255).toInt().toString();
+        _bController.text = (rgbColor.g * 255).toInt().toString();
+        _cController.text = (rgbColor.b * 255).toInt().toString();
         _alphaController.text = (color.opacity * 255).toInt().toString();
         break;
       case ColorPickerMode.hsl:
@@ -951,16 +952,16 @@ class _ColorPickerSetState extends State<ColorPickerSet> {
       ColorDerivative color = widget.color;
       var rgbColor = color.toColor();
       if (widget.showAlpha) {
-        _hexController.text = '#${rgbColor.value.toRadixString(16)}';
+        _hexController.text = '#${rgbColor.toARGB32().toRadixString(16)}';
       } else {
         _hexController.text =
-            '#${rgbColor.value.toRadixString(16).substring(2)}';
+            '#${rgbColor.toARGB32().toRadixString(16).substring(2)}';
       }
       switch (widget.mode) {
         case ColorPickerMode.rgb:
-          _aController.text = rgbColor.red.toString();
-          _bController.text = rgbColor.green.toString();
-          _cController.text = rgbColor.blue.toString();
+          _aController.text = (rgbColor.r * 255).toInt().toString();
+          _bController.text = (rgbColor.g * 255).toInt().toString();
+          _cController.text = (rgbColor.b * 255).toInt().toString();
           _alphaController.text = (color.opacity * 255).toInt().toString();
           break;
         case ColorPickerMode.hsl:
@@ -1253,10 +1254,10 @@ class _ColorPickerSetState extends State<ColorPickerSet> {
                       color = widget.color.toColor();
                       if (widget.showAlpha) {
                         _hexController.text =
-                            '#${color.value.toRadixString(16)}';
+                            '#${color.toARGB32().toRadixString(16)}';
                       } else {
                         _hexController.text =
-                            '#${color.value.toRadixString(16).substring(2)}';
+                            '#${color.toARGB32().toRadixString(16).substring(2)}';
                       }
                     }
                     widget.onColorChanged
@@ -2187,13 +2188,13 @@ final class _HSVColor extends ColorDerivative {
   double get hsvVal => color.value;
 
   @override
-  int get red => color.toColor().red;
+  int get red => (color.toColor().r * 255).toInt();
 
   @override
-  int get green => color.toColor().green;
+  int get green => (color.toColor().g * 255).toInt();
 
   @override
-  int get blue => color.toColor().blue;
+  int get blue => (color.toColor().b * 255).toInt();
 }
 
 final class _HSLColor extends ColorDerivative {
@@ -2267,13 +2268,13 @@ final class _HSLColor extends ColorDerivative {
   double get hsvVal => color.toHSV().value;
 
   @override
-  int get red => color.toColor().red;
+  int get red => (color.toColor().r * 255).toInt();
 
   @override
-  int get green => color.toColor().green;
+  int get green => (color.toColor().g * 255).toInt();
 
   @override
-  int get blue => color.toColor().blue;
+  int get blue => (color.toColor().b * 255).toInt();
 }
 
 class HSVColorPickerArea extends StatefulWidget {

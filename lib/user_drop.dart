@@ -1,18 +1,10 @@
+import 'package:chronosync/helpers.dart';
 import 'package:flutter/services.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:chronosync/clockdb.dart';
 
 Future<void> deleteAll() async {
   await dbOps("DELETE");
-}
-
-Widget buildToast(BuildContext context, ToastOverlay overlay) {
-  return SurfaceCard(
-    child: Basic(
-      subtitle: const Text('Link copied to clipboard'),
-      subtitleAlignment: Alignment.center,
-    ),
-  );
 }
 
 Widget userDrop(BuildContext context, Function() logOut, bool signedIn,
@@ -49,15 +41,15 @@ Widget userDrop(BuildContext context, Function() logOut, bool signedIn,
                         onPressed: () async {
                           showToast(
                             context: context,
-                            builder: buildToast,
+                            builder: buildToast('Policy Link Copied to Clipboard.'),
                             location: ToastLocation.bottomCenter,
                           );
                           await Clipboard.setData(ClipboardData(
                               text:
-                                  "https://github.com/araf0216/Chronosync#privacy-policy"));
+                                  "https://github.com/araf0216/ChronoSync#privacy-policy"));
                         },
                         child: Text(
-                          "https://github.com/araf0216/Chronosync#privacy-policy",
+                          "https://github.com/araf0216/ChronoSync#privacy-policy",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,
@@ -93,14 +85,15 @@ Widget userDrop(BuildContext context, Function() logOut, bool signedIn,
                         onPressed: () async {
                           showToast(
                             context: context,
-                            builder: buildToast,
+                            builder:
+                                buildToast("Source Link Copied to Clipboard."),
                             location: ToastLocation.bottomCenter,
                           );
                           await Clipboard.setData(ClipboardData(
-                              text: "https://github.com/araf0216/Chronosync"));
+                              text: "https://github.com/araf0216/ChronoSync"));
                         },
                         child: Text(
-                          "https://github.com/araf0216/Chronosync",
+                          "https://github.com/araf0216/ChronoSync",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,
@@ -161,7 +154,13 @@ Widget userDrop(BuildContext context, Function() logOut, bool signedIn,
                       onPressed: () async {
                         await deleteAll();
                         viewUpdate();
+                        if (!context.mounted) return;
                         Navigator.pop(context);
+                        showToast(
+                          context: context,
+                          builder: buildToast("All Clock-In Events Have Been Deleted.", true),
+                          location: ToastLocation.bottomCenter,
+                        );
                       },
                     )
                   ],

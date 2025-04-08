@@ -16,3 +16,30 @@ String dateStrPost(DateTime date) {
 String timeStrPost(TimeOfDay time) {
   return "${time.hour.toString().padLeft(2, "0")}:${time.minute.toString().padLeft(2, "0")}:00";
 }
+
+ToastBuilder buildToast(String message, [bool hasButton = false]) {
+  return !hasButton
+  ? (BuildContext context, ToastOverlay overlay) {
+    return SurfaceCard(
+      child: Basic(
+        title: Text(message).sans(),
+        titleAlignment: Alignment.center,
+      ),
+    );
+  }
+  : (BuildContext context, ToastOverlay overlay) {
+    return SurfaceCard(
+      child: Basic(
+        title: Text(message),
+        trailing: PrimaryButton(
+          size: ButtonSize.small,
+          onPressed: () {
+            overlay.close();
+          },
+          child: const Text('Close').sans(),
+        ),
+        trailingAlignment: Alignment.center,
+      ),
+    );
+  };
+}

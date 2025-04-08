@@ -679,6 +679,7 @@ class NavigationItem extends AbstractNavigationButton {
   final ValueChanged<bool>? onChanged;
   final int? index;
   const NavigationItem({
+    super.key,
     this.selectedStyle,
     this.selected,
     this.onChanged,
@@ -781,6 +782,7 @@ class _NavigationItemState
 class NavigationButton extends AbstractNavigationButton {
   final VoidCallback? onPressed;
   const NavigationButton({
+    super.key,
     this.onPressed,
     super.label,
     super.spacing,

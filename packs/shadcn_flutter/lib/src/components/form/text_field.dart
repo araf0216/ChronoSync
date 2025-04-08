@@ -25,9 +25,9 @@ export 'package:flutter/services.dart'
 // patched from flutter:widgets.dart to implement ComponentController<TextEditingValue>
 class TextEditingController extends widgets.TextEditingController
     with ComponentController<TextEditingValue> {
-  TextEditingController({String? text}) : super(text: text);
-  TextEditingController.fromValue(TextEditingValue value)
-      : super.fromValue(value);
+  TextEditingController({super.text});
+  TextEditingController.fromValue(TextEditingValue super.value)
+      : super.fromValue();
 }
 
 class RestorableTextEditingController

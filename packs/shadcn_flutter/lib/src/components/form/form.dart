@@ -83,7 +83,7 @@ class IgnoreForm<T> extends StatelessWidget {
   final bool ignoring;
   final Widget child;
 
-  const IgnoreForm({this.ignoring = true, required this.child});
+  const IgnoreForm({super.key, this.ignoring = true, required this.child});
 
   @override
   widgets.Widget build(widgets.BuildContext context) {
@@ -644,6 +644,7 @@ class RangeValidator<T extends num> extends Validator<T> {
   }
 
   @override
+  // ignore: hash_and_equals
   bool operator ==(Object other) {
     return other is RangeValidator &&
         other.min == min &&
@@ -1565,6 +1566,7 @@ class SubmissionResult {
   }
 
   @override
+  // ignore: hash_and_equals
   bool operator ==(Object other) {
     return other is SubmissionResult &&
         mapEquals(other.values, values) &&

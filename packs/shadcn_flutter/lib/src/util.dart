@@ -765,7 +765,7 @@ extension ColorExtension on Color {
   }
 
   String toHex({bool includeHashSign = false, bool includeAlpha = true}) {
-    String hex = value.toRadixString(16).padLeft(8, '0');
+    String hex = toARGB32().toRadixString(16).padLeft(8, '0');
     if (!includeAlpha) {
       hex = hex.substring(2);
     }

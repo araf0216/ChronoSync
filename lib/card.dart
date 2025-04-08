@@ -1,10 +1,12 @@
 import 'package:chronosync/api.dart';
+import 'package:chronosync/helpers.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 String user_ = "", pass_ = "";
 
 @override
-Widget loginCard(BuildContext context, Function(String, String) setUser, Function([String]) viewUpdate) {
+Widget loginCard(BuildContext context, Function(String, String) setUser,
+    Function([String]) viewUpdate) {
   return Container(
     alignment: Alignment.center,
     width: MediaQuery.of(context).size.width * 0.8,
@@ -46,32 +48,19 @@ Widget loginCard(BuildContext context, Function(String, String) setUser, Functio
           SizedBox(
             width: double.infinity,
             child: PrimaryButton(
-              child: Text('Sign In', textScaler: TextScaler.linear(1.15)).sans(),
+              child:
+                  Text('Sign In', textScaler: TextScaler.linear(1.15)).sans(),
               onPressed: () async {
                 // print("Signing in User: [$user_]");
                 APIService api = APIService();
                 bool loggedIn = await api.apiLogin(user_: user_, pass_: pass_);
                 if (!loggedIn) {
-                  Widget buildToast(
-                      BuildContext context, ToastOverlay overlay) {
-                    return SurfaceCard(
-                      child: Basic(
-                        title: const Text('Invalid BestHR Login').sans(),
-                        trailing: PrimaryButton(
-                            size: ButtonSize.small,
-                            onPressed: () {
-                              overlay.close();
-                            },
-                            child: const Text('Close').sans()),
-                        trailingAlignment: Alignment.center,
-                      ),
-                    );
-                  }
-
+                  if (!context.mounted) return;
                   showToast(
-                      context: context,
-                      builder: buildToast,
-                      location: ToastLocation.bottomCenter);
+                    context: context,
+                    builder: buildToast('Invalid BestHR Login', true),
+                    location: ToastLocation.bottomCenter,
+                  );
                   return;
                 }
                 setUser(user_, pass_);
@@ -80,17 +69,6 @@ Widget loginCard(BuildContext context, Function(String, String) setUser, Functio
               },
             ),
           ),
-          // Gap(16),
-          // SizedBox(
-          //   width: double.infinity,
-          //   child: SecondaryButton(
-          //     child: Text(
-          //       "Continue to View",
-          //       style: TextStyle(color: context.theme.colorScheme.secondaryForeground),
-          //     ).sans(),
-          //     onPressed: () => viewUpdate("clocks"),
-          //   ),
-          // )
         ],
       ),
     ),

@@ -320,7 +320,7 @@ extension TextExtension on Widget {
         style: (context, theme) => theme.typography.h1, child: this);
   }
 
-  Widget h2({double? pad = null}) {
+  Widget h2({double? pad}) {
     return Builder(builder: (context) {
       Widget child;
       if (this is WrappedText) {
