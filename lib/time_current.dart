@@ -134,17 +134,19 @@ class _TimeScreen extends State<TimeScreen> {
                     title: Center(
                       child: Text(
                         "Confirm Check-In",
-                        style: TextStyle(fontSize: 20),
+                        style: TextStyle(fontSize: 24),
                       ).h2(pad: 0).sans(),
                     ),
                     content: Center(
                       child: mat.Column(
                         children: [
-                          Text("Confirm Clocked In Time:").sans(),
-                          Text("$inTimeStr - $outTimeStr",
-                                  style: TextStyle(color: Colors.white))
-                              .h4()
-                              .sans(),
+                          Text("Confirm Clock-In Time:").sans(),
+                          Text(
+                            "$inTimeStr - $outTimeStr",
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ).base().sans(),
                         ],
                       ),
                     ),
@@ -204,7 +206,7 @@ class _TimeScreen extends State<TimeScreen> {
             children: [
               Gap(20),
               Text(
-                "Current Status:",
+                "Current Status",
                 // "Current Build Count: $buildCount\nCurrent State Time: ${timeStr(stateTime)}",
                 textAlign: TextAlign.center,
               ).sans().h4(),

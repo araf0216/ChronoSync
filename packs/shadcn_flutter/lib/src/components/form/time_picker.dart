@@ -106,14 +106,18 @@ class TimePicker extends StatelessWidget {
       placeholder: placeholder ?? Text(localizations.placeholderTimePicker),
       onChanged: onChanged,
       builder: (context, value) {
-        return Text(localizations.formatTimeOfDay(value,
-                use24HourFormat: use24HourFormat, showSeconds: showSeconds))
-            .sans();
+        return Text(
+          localizations.formatTimeOfDay(
+            value,
+            use24HourFormat: use24HourFormat,
+            showSeconds: showSeconds,
+          ),
+        ).base().sans();
       },
       enabled: enabled,
       mode: mode,
       dialogTitle: dialogTitle,
-      trailing: const Icon(Icons.access_time),
+      trailing: const Icon(Icons.access_time, size: 24),
       editorBuilder: (context, handler) {
         return TimePickerDialog(
           initialValue: handler.value,

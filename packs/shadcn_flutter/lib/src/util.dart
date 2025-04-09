@@ -892,6 +892,11 @@ class TimeOfDay {
         other.second == second;
   }
 
+  bool operator >=(TimeOfDay other) {
+    return hour > other.hour ||
+      hour == other.hour && minute >= other.minute;
+  }
+
   @override
   int get hashCode => Object.hash(hour, minute, second);
 

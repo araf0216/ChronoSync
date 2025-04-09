@@ -16,6 +16,7 @@ class ClockTimelineState extends State<ClockTimeline> {
   String user = "User";
   String pass = "";
   bool toggleRefresh = false;
+  bool getComplete = false;
 
   @override
   void initState() {
@@ -28,10 +29,14 @@ class ClockTimelineState extends State<ClockTimeline> {
 
     if (clocks_.isEmpty) {
       // print("no clocks LMAO");
+      setState(() {
+        getComplete = true;
+      });
     } else {
       // print("clocks found!");
       setState(() {
         clocks = clocks_.toList();
+        getComplete = true;
       });
     }
   }
@@ -54,6 +59,8 @@ class ClockTimelineState extends State<ClockTimeline> {
       });
       getClocks();
     }
+
+    if (!getComplete) return CircularProgressIndicator(size: 32);
 
     return clocks.isEmpty
         ? Text(
@@ -107,7 +114,8 @@ class ClockTimelineState extends State<ClockTimeline> {
                                   if (clocks[i].isUploaded) {
                                     showToast(
                                       context: context,
-                                      builder: buildToast('Event already uploaded.', true),
+                                      builder: buildToast(
+                                          'Event already uploaded.', true),
                                       location: ToastLocation.bottomCenter,
                                     );
                                   } else {
@@ -166,7 +174,9 @@ class ClockTimelineState extends State<ClockTimeline> {
                                                 child: Text("OK").sans(),
                                                 onPressed: () async {
                                                   Navigator.pop(context);
-                                                  context = Navigator.of(context).context;
+                                                  context =
+                                                      Navigator.of(context)
+                                                          .context;
 
                                                   APIService api = APIService();
                                                   await api.apiUpload(
@@ -184,8 +194,11 @@ class ClockTimelineState extends State<ClockTimeline> {
                                                   if (!context.mounted) return;
                                                   showToast(
                                                     context: context,
-                                                    builder: buildToast('Clock-In Event has been uploaded.', true),
-                                                    location: ToastLocation.bottomCenter,
+                                                    builder: buildToast(
+                                                        'Clock-In Event has been uploaded.',
+                                                        true),
+                                                    location: ToastLocation
+                                                        .bottomCenter,
                                                   );
                                                 },
                                               )
@@ -253,8 +266,11 @@ class ClockTimelineState extends State<ClockTimeline> {
                                               if (!context.mounted) return;
                                               showToast(
                                                 context: context,
-                                                builder: buildToast('Clock-In Event Has Been Deleted.', true),
-                                                location: ToastLocation.bottomCenter,
+                                                builder: buildToast(
+                                                    'Clock-In Event Has Been Deleted.',
+                                                    true),
+                                                location:
+                                                    ToastLocation.bottomCenter,
                                               );
                                             },
                                           )

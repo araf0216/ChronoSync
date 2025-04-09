@@ -85,6 +85,7 @@ flutter:
     - lib/assets/splash.png
     - lib/assets/lawL.png
     - lib/assets/log-out.png
+    - lib/assets/download.png
   uses-material-design: true
 
 flutter_native_splash:

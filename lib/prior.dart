@@ -1,16 +1,17 @@
+import 'package:chronosync/back_gesture.dart';
 import 'package:chronosync/time.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:shadcn_flutter/shadcn_flutter_extension.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class PriorScreen extends StatefulWidget {
+  const PriorScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<PriorScreen> createState() => _PriorScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _PriorScreenState extends State<PriorScreen> {
   DateTime start = DateTime.utc(2025, 1, 1), today = DateTime.now();
   DateTime? selectDate;
   bool selected = false;
@@ -26,8 +27,16 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return selectDate != null
-        ? TimeSelect(
-            now: selectDate!, start: start, end: today, unselect: unselectDate)
+        ? backGesture(
+            context: context,
+            child: TimeSelect(
+              now: selectDate!,
+              start: start,
+              end: today,
+              unselect: unselectDate,
+            ),
+            action: unselectDate,
+          )
         : mat.Scaffold(
             backgroundColor: Colors.black,
             body: Center(

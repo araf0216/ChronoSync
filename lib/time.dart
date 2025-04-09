@@ -37,16 +37,65 @@ class _TimeSelect extends State<TimeSelect> {
     }
   }
 
-  void setClock() {
+  void setClock(BuildContext context) {
     DateTime date = mat.DateUtils.dateOnly(widget.now);
 
-    widget.unselect();
+    if (inTime >= outTime) {
+      showToast(
+          context: context,
+          builder: buildToast("Clock-In Must Occur Before Clock-Out.", true));
+      return;
+    }
 
-    // Actual working database insert of new ClockDate object
-    dbOps("C", clock: ClockDate(date: date, inTime: inTime, outTime: outTime))
-        .then((v) {
-      // print("New Clock-In on $date from $inTime to $outTime");
-    });
+    String inTimeStr = timeStr(inTime), outTimeStr = timeStr(outTime);
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Center(
+              child: Text(
+                "Confirm Check-In",
+                style: TextStyle(fontSize: 24),
+              ).h2(pad: 0).sans(),
+            ),
+            content: Center(
+              child: mat.Column(
+                children: [
+                  Text("Confirm Clock-In Time:").sans(),
+                  Text(
+                    "$inTimeStr - $outTimeStr",
+                    style: TextStyle(color: Colors.white),
+                  ).base().sans(),
+                ],
+              ),
+            ),
+            actions: [
+              SecondaryButton(
+                child: Text("Cancel").sans(),
+                onPressed: () => Navigator.pop(context),
+              ),
+              PrimaryButton(
+                child: Text("OK").sans(),
+                onPressed: () {
+                  Navigator.pop(context);
+                  widget.unselect();
+
+                  // Actual working database insert of new ClockDate object
+                  dbOps("C", clock: ClockDate(date: date, inTime: inTime, outTime: outTime))
+                      .then((v) {
+                    // print("New Clock-In on $date from $inTime to $outTime");
+                    if (!context.mounted) return;
+                    showToast(
+                        context: context,
+                        builder: buildToast("Clock-In Saved to Device.", true));
+                  });
+                },
+              ),
+            ],
+            actionsCenterAlign: true,
+          );
+        });
   }
 
   @override
@@ -56,12 +105,15 @@ class _TimeSelect extends State<TimeSelect> {
         backgroundColor: Colors.transparent,
         onPressed: null,
         label: PrimaryButton(
-          onPressed: () => setClock(),
-          trailing: Icon(Icons.check_circle_outline_rounded),
+          onPressed: () => setClock(context),
+          trailing: ImageIcon(
+            AssetImage("lib/assets/download.png"),
+            size: 26,
+            color: Colors.black,
+          ),
           child: Text(
-            "Submit",
-            style: TextStyle(fontSize: 18),
-          ).h4().sans(),
+            "Save Clock-In",
+          ).base().sans().semiBold(),
         ),
       ),
       floatingActionButtonLocation:

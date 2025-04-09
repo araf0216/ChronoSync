@@ -131,7 +131,7 @@ Widget userDrop(BuildContext context, Function() logOut, bool signedIn,
                           "Delete all Check-In Events from device storage?",
                           style: TextStyle(color: Colors.white),
                           textAlign: TextAlign.center,
-                        ).sans(),
+                        ).base().sans(),
                         Gap(16),
                         Text(
                           "Note: No information is stored outside of the device.",
@@ -195,7 +195,7 @@ Widget userDrop(BuildContext context, Function() logOut, bool signedIn,
                         children: [
                           Text(
                             "You are about to log out.",
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.white, fontSize: 20),
                             textAlign: TextAlign.center,
                           ).sans(),
                           Gap(8),

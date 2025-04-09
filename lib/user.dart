@@ -1,3 +1,4 @@
+import 'package:chronosync/back_gesture.dart';
 import 'package:chronosync/card.dart';
 import 'package:chronosync/licenses.dart';
 import 'package:chronosync/user_drop.dart';
@@ -137,8 +138,12 @@ class _UserScreenState extends State<UserScreen> {
           ),
       ],
       child: viewLicenses
-          ? LicensesPage(
-              exit: getPage,
+          ? backGesture(
+              context: context,
+              child: LicensesPage(
+                exit: getPage,
+              ),
+              action: getPage,
             )
           : mat.Container(
               alignment: Alignment.center,

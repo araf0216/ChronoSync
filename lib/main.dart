@@ -1,5 +1,5 @@
 import 'package:chronosync/current.dart';
-import 'package:chronosync/home.dart';
+import 'package:chronosync/prior.dart';
 import 'package:chronosync/user.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:flutter/material.dart' as mat;
@@ -19,7 +19,7 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   int? _selectedIndex;
   static const List<Widget> screens = <Widget>[
-    HomeScreen(),
+    PriorScreen(),
     CurrentScreen(),
     UserScreen()
   ];
