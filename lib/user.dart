@@ -138,12 +138,11 @@ class _UserScreenState extends State<UserScreen> {
           ),
       ],
       child: viewLicenses
-          ? backGesture(
-              context: context,
+          ? BackGesture(
+              action: getPage,
               child: LicensesPage(
                 exit: getPage,
               ),
-              action: getPage,
             )
           : mat.Container(
               alignment: Alignment.center,

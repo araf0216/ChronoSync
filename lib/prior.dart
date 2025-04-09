@@ -27,15 +27,14 @@ class _PriorScreenState extends State<PriorScreen> {
   @override
   Widget build(BuildContext context) {
     return selectDate != null
-        ? backGesture(
-            context: context,
+        ? BackGesture(
+            action: unselectDate,
             child: TimeSelect(
               now: selectDate!,
               start: start,
               end: today,
               unselect: unselectDate,
             ),
-            action: unselectDate,
           )
         : mat.Scaffold(
             backgroundColor: Colors.black,

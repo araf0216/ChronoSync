@@ -112,7 +112,8 @@ class TimePicker extends StatelessWidget {
             use24HourFormat: use24HourFormat,
             showSeconds: showSeconds,
           ),
-        ).base().sans();
+          style: const TextStyle(fontSize: 18),
+        ).sans();
       },
       enabled: enabled,
       mode: mode,

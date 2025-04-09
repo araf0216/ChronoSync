@@ -108,12 +108,13 @@ class _TimeSelect extends State<TimeSelect> {
           onPressed: () => setClock(context),
           trailing: ImageIcon(
             AssetImage("lib/assets/download.png"),
-            size: 26,
+            size: 22,
             color: Colors.black,
           ),
           child: Text(
             "Save Clock-In",
-          ).base().sans().semiBold(),
+            style: TextStyle(fontSize: 18),
+          ).sans().semiBold(),
         ),
       ),
       floatingActionButtonLocation:
