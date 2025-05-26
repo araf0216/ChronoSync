@@ -13,6 +13,7 @@ export 'package:flutter/cupertino.dart'
         cupertinoDesktopTextSelectionHandleControls;
 // export Icons from material
 export 'package:flutter/material.dart'
+    // ignore: multiple_combinators
     show Icons, MaterialPageRoute, MaterialPage, SliverAppBar, FlutterLogo
     hide TextButton;
 export 'package:flutter/widgets.dart'
