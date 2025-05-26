@@ -42,7 +42,7 @@ class _LicensesPageState extends State<LicensesPage> {
               alignment: Alignment.center,
               icon: Icon(Icons.arrow_back_ios_new_rounded),
               onPressed: () => widget.exit(),
-              density: ButtonDensity.icon,
+              density: ButtonDensity.iconDense,
             )
           ],
           title: Text("Licenses"),

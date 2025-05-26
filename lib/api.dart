@@ -1,10 +1,10 @@
+import 'package:chronosync/encryption.dart';
 import 'package:chronosync/helpers.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:http/http.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class APIService {
   APIService();
@@ -24,12 +24,22 @@ class APIService {
   String vuid = "", cookie = "";
 
   Future<bool> apiLogin({String? user_, String? pass_}) async {
-    final prefs = await SharedPreferences.getInstance();
-    String user = user_ ?? prefs.getString("user") ?? "",
-        pass = pass_ ?? prefs.getString("pass") ?? "";
+    String user, pass;
+    bool terminate = false;
+
+    if (user_ != null && pass_ != null) {
+      user = user_;
+      pass = pass_;
+      terminate = true;
+    } else {
+      // SecureDataCache instance (loaded on userset)
+      user = SecureDataCache.single.user ?? "";
+      pass = SecureDataCache.single.pass ?? "";
+    }
 
     if (user.isEmpty || pass.isEmpty) {
       // print("failed to find user when logging in");
+      client.close();
       return false;
     }
 
@@ -55,11 +65,13 @@ class APIService {
 
     if (response.statusCode != 200) {
       // print("full fail");
+      client.close();
       return false;
     }
 
     if (headers["Cookie"] == null) {
       // print("something failed");
+      client.close();
       return false;
     }
 
@@ -79,11 +91,16 @@ class APIService {
 
     if (vuidEl == null) {
       // print("element not found - failed to log in");
+      client.close();
       return false;
     }
 
     vuid = vuidEl.attributes["value"]!;
     // print(vuid);
+
+    if (terminate) {
+      client.close();
+    }
 
     return true;
   }
@@ -96,6 +113,7 @@ class APIService {
 
     if (!loggedIn) {
       // print("something went wrong logging in");
+      client.close();
       return;
     }
 
@@ -121,5 +139,7 @@ class APIService {
     response = await client.post(clockUrl, body: clockData, headers: headers);
 
     // print(response.statusCode);
+    client.close();
+    return;
   }
 }

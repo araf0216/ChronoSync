@@ -51,5 +51,7 @@
 		<false/>
 		<key>ITSAppUsesNonExemptEncryption</key>
 		<false/>
+		<key>NSFaceIDUsageDescription</key>
+		<string>Used to authenticate and protect your encrypted data</string>
 	</dict>
 </plist>

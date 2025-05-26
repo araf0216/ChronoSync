@@ -1,12 +1,15 @@
 import 'package:chronosync/back_gesture.dart';
-import 'package:chronosync/card.dart';
+import 'package:chronosync/login.dart';
+import 'package:chronosync/encryption.dart';
 import 'package:chronosync/licenses.dart';
+import 'package:chronosync/lifecycle.dart';
 import 'package:chronosync/user_drop.dart';
 import 'package:flutter/material.dart' as mat;
 import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'history.dart';
 import 'package:intl/intl.dart';
+// import 'package:local_auth/local_auth.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -16,61 +19,157 @@ class UserScreen extends StatefulWidget {
 }
 
 class _UserScreenState extends State<UserScreen> {
-  bool userSet = false;
-  String user = "User";
+  bool userSaved = false;
+  bool? authComplete;
+  bool paused = false;
+  late final LifeCycleManager _lifeCycleListener;
+
+  String user = SecureDataCache.single.user ?? "";
   String pass = "";
+
   Future? loading;
+
   bool viewLicenses = false;
+
+  // wip
   bool viewClocks = false;
   bool refreshToggle = false;
 
   @override
   void initState() {
     super.initState();
-    loading = isUserSet();
+    _lifeCycleListener = LifeCycleManager();
+    _lifeCycleListener.onResume(resumeBuild);
+    _lifeCycleListener.onPause(clearBuild);
+    loading = userSetStatus();
   }
 
-  Future<bool> isUserSet() async {
-    // print("running isUserSet");
+  void resumeBuild() async {
+    if (!mounted || !userSaved || authComplete != null) return;
+    // found userSaved -> reauthenticate on resume after pause
+    if (paused) {
+      setState(() {
+        paused = false;
+      });
+      loading = userSetStatus();
+    }
+  }
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  void clearBuild() {
+    // print("pausing");
+    if (mounted && userSaved) {
+      setState(() {
+        authComplete = null;
+        paused = true;
+      });
+    }
+  }
 
-    String? user_ = prefs.getString("user"), pass_ = prefs.getString("pass");
+  Future<bool> unlockUser() async {
+    bool loadSuccess = await SecureDataCache.single.loadMemory();
 
-    if (user_ == null || pass_ == null) {
-      // print("no user vars found on device");
-      return false;
+    if (mounted) {
+      setState(() {
+        authComplete = loadSuccess;
+      });
     }
 
-    if (user_ == "User" || user_ == "" || pass_ == "") {
-      // print("found default user vars - not signed in");
-      return false;
+    return loadSuccess;
+  }
+
+  @override
+  void dispose() {
+    _lifeCycleListener.dispose(resume: resumeBuild, pause: clearBuild);
+    super.dispose();
+  }
+
+  Future<bool> userSetStatus() async {
+    // print("running userSetStatus");
+
+    // encrypted user existence check
+    bool userSaved_ = await SecureDataCache.single.userSaved();
+
+    // no pre-existing -> exit default userSaved
+    if (!userSaved_) {
+      // print("no user found saved");
+      return true;
     }
 
-    // print("Found User: [$user_]!");
+    // line reached -> confirmed userSaved = true
+    setState(() {
+      userSaved = true;
+    });
 
-    await setUser(user_, pass_);
+    bool isCached;
+
+    // user not cached to memory -> decrypt with auth + load to memory
+    if (!SecureDataCache.single.userCached()) {
+      // print("not cached");
+      isCached = false;
+    }
+
+    // unlocked user exists in cache -> setUser() without unlockUser()
+    else {
+      // print("Found User: [${SecureDataCache.single.user}]!");
+      if (SecureDataCache.single.pass == "cancelled") {
+        setState(() {
+          authComplete = false;
+        });
+
+        return true;
+      }
+      isCached = true;
+    }
+
+    // line reached -> auth + load successful
+    await setUser(SecureDataCache.single.user, SecureDataCache.single.pass, isLocked: !isCached);
 
     return true;
   }
 
-  Future<void> setUser(String user_, String pass_) async {
-    // print("storing user to device storage");
+  Future<void> setUser(String? user_, String? pass_, {bool isLocked = true}) async {
+    // print("setUser triggered");
 
-    if (user_ == "User" || user_ == "" || pass_ == "") {
+    // user on disk, not cache -> unlock user - resume
+    if (isLocked) {
+      bool authSuccess = await unlockUser();
+      if (authSuccess) {
+        user_ = SecureDataCache.single.user;
+        pass_ = SecureDataCache.single.pass;
+      } else {
+        setState(() {
+          authComplete = false;
+        });
+
+        return;
+      }
+    }
+
+    // null check
+    if (user_ == null || pass_ == null) return;
+
+    // empty check
+    if (user_.isEmpty || pass_.isEmpty) {
       return;
     }
 
-    // storing non-null user info to device storage
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString("user", user_);
-    await prefs.setString("pass", pass_);
+    // no user on disk -> encrypt + store user to disk - initial login
+    if (!userSaved) {
+      bool storeSuccess = await SecureDataCache.single.storeDevice(user_, pass_);
 
-    setState(() {
-      user = user_;
-      pass = pass_;
-      userSet = true;
-    });
+      if (!storeSuccess) return;
+      // fail toast can go here
+    }
+
+    if (mounted) {
+      // print("confirming/setting user to present state");
+      setState(() {
+        user = user_!;
+        pass = pass_!;
+        userSaved = true;
+        authComplete = true;
+      });
+    }
   }
 
   Future<void> logoutUser() async {
@@ -80,18 +179,26 @@ class _UserScreenState extends State<UserScreen> {
 
     String? user_ = prefs.getString("user"), pass_ = prefs.getString("pass");
 
-    if (user_ != null) await prefs.remove("user");
-    if (pass_ != null) await prefs.remove("pass");
+    if (user_ != null || pass_ != null) {
+      // print("removing unsecure user data found in sharedprefs");
+      await prefs.remove("user");
+      await prefs.remove("pass");
+    }
+
+    SecureDataCache.single.clear(removeKey: true);
+    await prefs.remove("secureUser");
 
     setState(() {
-      user = "User";
+      user = "";
       pass = "";
-      userSet = false;
+      userSaved = false;
+      authComplete = false;
     });
   }
 
   void getPage([String page = ""]) {
     setState(() {
+      // ToDo - replace with switch case
       viewLicenses = page == "licenses";
       viewClocks = page == "clocks";
       refreshToggle = page == "" ? !refreshToggle : refreshToggle;
@@ -100,6 +207,8 @@ class _UserScreenState extends State<UserScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String name = (user.isEmpty || user == "failed") ? "User" : toBeginningOfSentenceCase(user.split(".")[0]);
+
     return Scaffold(
       headers: [
         if (!viewLicenses)
@@ -108,7 +217,7 @@ class _UserScreenState extends State<UserScreen> {
               mat.Column(
                 children: [
                   Text(
-                    "Welcome, ${toBeginningOfSentenceCase(user.split(".")[0])}",
+                    "Welcome, $name",
                     style: TextStyle(fontSize: 24),
                   ).h2().sans().center(),
                 ],
@@ -122,7 +231,7 @@ class _UserScreenState extends State<UserScreen> {
                       alignment: Alignment.center,
                       context: context,
                       builder: (context) {
-                        return userDrop(context, logoutUser, userSet, getPage);
+                        return userDrop(context, logoutUser, userSaved, getPage);
                       },
                     );
                   },
@@ -153,13 +262,18 @@ class _UserScreenState extends State<UserScreen> {
                     return CircularProgressIndicator(size: 32);
                   }
 
-                  return SingleChildScrollView(
-                    child: !userSet && !viewClocks
-                        ? loginCard(context, setUser, getPage)
-                        : Data.inherit(
-                            data: refreshToggle,
-                            child: ClockTimeline(),
-                          ),
+                  bool onlyAuth = userSaved && authComplete == false;
+                  Function loginFunc = onlyAuth ? unlockUser : setUser;
+
+                  return Scrollbar(
+                    child: SingleChildScrollView(
+                      child: userSaved && authComplete == true
+                          ? Data.inherit(
+                              data: refreshToggle,
+                              child: ClockTimeline(),
+                            )
+                          : loginCard(context, onlyAuth, loginFunc, getPage),
+                    ),
                   );
                 },
               ),

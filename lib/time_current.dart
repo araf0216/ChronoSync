@@ -22,9 +22,7 @@ class _TimeScreen extends State<TimeScreen> {
   int buildCount = 0;
   TimeOfDay? inTime;
   TimeOfDay? outTime;
-  // this clockstate needs to be saved and retrieved from shared preferences
-  // perform fetch from shared preferences on initState
-  // if not found in shared preferences, simply default to Out state
+  // default clockstate - Clocked Out
   String clockState = "Out";
   TimeOfDay stateTime = TimeOfDay.now();
   String inTimeStr = "def";
@@ -35,7 +33,8 @@ class _TimeScreen extends State<TimeScreen> {
     super.initState();
     getState();
   }
-
+  
+  // retrieve clockstate info from sharedprefs
   void getState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final int? inHour = prefs.getInt("inHour");
@@ -72,6 +71,7 @@ class _TimeScreen extends State<TimeScreen> {
     });
   }
 
+  // store clockstate info to sharedprefs
   void setClockState() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -93,7 +93,7 @@ class _TimeScreen extends State<TimeScreen> {
     }
   }
 
-  // Actual working database insert of new ClockDate object
+  // database insert of new ClockDate object
   void setClock() {
     if (inTime == null || outTime == null) {
       // print("inTime is ${inTime == null} | outTime is ${outTime == null}");
@@ -282,7 +282,7 @@ class _TimeDial extends State<TimeDial> {
   TimeOfDay? time;
   bool pressed = false;
   bool init = true;
-  int tdBuildCount = 0;
+  // int tdBuildCount = 0;
 
   @override
   void initState() {
@@ -311,7 +311,7 @@ class _TimeDial extends State<TimeDial> {
   @override
   Widget build(BuildContext context) {
     time = time ?? TimeOfDay.now();
-    tdBuildCount++;
+    // tdBuildCount++;
 
     Widget actionB() {
       return TimePicker(

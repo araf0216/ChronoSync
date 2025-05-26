@@ -21,7 +21,7 @@ class ClockTimelineState extends State<ClockTimeline> {
   @override
   void initState() {
     super.initState();
-    getClocks();
+    if (mounted) getClocks();
   }
 
   Future<void> getClocks() async {

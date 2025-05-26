@@ -6,6 +6,15 @@ set -e
 # The default execution directory of this script is the ci_scripts directory.
 cd $CI_PRIMARY_REPOSITORY_PATH # change working directory to the root of your cloned repo.
 
+# Fail if secure env var missing
+if [ -z "$SECURE_DART" ]; then
+  echo "SECURE_DART not set"
+  exit 1
+fi
+
+# Write secure contents to Flutter file.
+echo "$SECURE_DART" > lib/secure.dart
+
 # Install Flutter using git.
 git clone https://github.com/flutter/flutter.git --depth 1 -b stable $HOME/flutter
 export PATH="$PATH:$HOME/flutter/bin"
