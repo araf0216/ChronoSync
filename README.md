@@ -4,6 +4,8 @@
 
 **ChronoSync Productivity** is a versatile mobile application developed using Flutter, designed to streamline the process of Clock-In/Clock-Out tracking. It empowers users to conveniently track their work hours and manage attendance directly from their mobile devices. The app securely stores check-in events locally on the device and syncs them with the BestHR Cloud platform upon user confirmation.
 
+[![Download on the App Store](https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg)](https://apps.apple.com/us/app/chronosync-productivity/id6743985115)
+
 ### Key Features:
 
    - Clock-In/Clock-Out Management: Easily log your work hours with a simple and intuitive interface for Check-In/Check-Out operations.
