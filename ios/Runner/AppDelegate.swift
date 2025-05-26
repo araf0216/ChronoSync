@@ -1,11 +1,14 @@
 import UIKit
 import Flutter
+import Foundation
+import CryptoKit
+import Security
+import LocalAuthentication
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
   private let CHANNEL = "chrono_encryption"
   private let service = "com.example.chronosync"
-  private let alias = ""
 
   override func application(
     _ application: UIApplication,
@@ -18,8 +21,11 @@ import Flutter
     channel.setMethodCallHandler { [weak self] (call, result) in
       guard let self = self else { return }
       
-      let args = call.arguments as? [String: Any]
-      alias = args["alias"] as? String
+      guard let args = call.arguments as? [String: Any],
+        let alias = args["alias"] as? String, !alias.isEmpty else {
+          result(FlutterError(code: "INVALID_ALIAS", message: "Alias is null or empty", details: nil))
+          return
+        }
 
       switch call.method {
         case "encrypt":
@@ -84,7 +90,7 @@ import Flutter
     let status = SecItemCopyMatching(query as CFDictionary, &item)
 
     if status == errSecSuccess, let data = item as? Data {
-        return SymmetricKey(data: data)
+      return SymmetricKey(data: data)
     }
 
     // no existing key -> generate new + store in keychain
