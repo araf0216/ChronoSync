@@ -37,7 +37,7 @@ import LocalAuthentication
           let rawBytes = self.concatBytes(userString: rawUser, passString: rawPass)
 
           do {
-            let encrypted = try self.encrypt(data: rawBytes, alias: alias)
+            let encrypted = try self.encrypt(rawBytes: rawBytes, alias: alias)
             result(encrypted)
           } catch {
             result(FlutterError(code: "ENCRYPTION_FAILED", message: error.localizedDescription, details: nil))
@@ -51,8 +51,8 @@ import LocalAuthentication
           }
 
           do {
-            let decrypted = try decrypt(cipher64: cipherText, alias: alias)
-            if let (decryptedUser, decryptedPass) = splitBytes(decrypted) {
+            let decrypted = try self.decrypt(cipher64: cipherText, alias: alias)
+            if let (decryptedUser, decryptedPass) = self.splitBytes(decrypted) {
               result(["privateUser": decryptedUser, "privatePass": decryptedPass])
             } else {
               throw NSError(domain: "DECRYPT_SPLIT_FAILED", code: -1)
@@ -110,7 +110,7 @@ import LocalAuthentication
             kSecAttrAccount as String: alias,
             kSecAttrService as String: service,
             kSecAttrAccessControl as String: accessControl,
-            kSecUseAuthenticationUI as String: kSecUseAuthenticationUIAllow,
+            kSecUseAuthenticationContext as String: context,
             kSecValueData as String: keyData
         ]
 
