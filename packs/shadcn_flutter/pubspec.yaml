@@ -14,9 +14,9 @@ dependencies:
   email_validator: ^3.0.0
   flutter:
     sdk: flutter
-  skeletonizer: ^1.4.2
+  skeletonizer: ^1.4.3
   syntax_highlight: ^0.4.0
-  country_flags: ^3.0.0
+  country_flags: ^3.3.0
   phonecodes: ^0.0.3
   cross_file: ^0.3.4+2
   image: ^4.2.0
