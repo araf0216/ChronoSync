@@ -53,8 +53,8 @@ class SecureDataCache {
       return false;
     }
 
-    if (user_ == "cancelled" || pass_ == "cancelled") {
-      // print("cancelled authentication");
+    if (user_ == "canceled" || pass_ == "canceled") {
+      // print("canceled authentication");
       single.pass = pass_;
       return false;
     }
@@ -66,7 +66,6 @@ class SecureDataCache {
   }
 
   Future<bool> storeDevice(String userRaw, String passRaw) async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String secure = await EncryptionInterface.encrypt(userRaw, passRaw);
@@ -76,8 +75,8 @@ class SecureDataCache {
       return false;
     }
 
-    if (secure == "failed" || secure == "cancelled") {
-      // print("encryption failed or cancelled authentication");
+    if (secure == "failed" || secure == "canceled") {
+      // print("encryption failed or canceled authentication");
       return false;
     }
 
@@ -89,8 +88,8 @@ class SecureDataCache {
     return true;
   }
 
-  bool authCancelled() {
-    return single.user == "cancelled" || single.pass == "cancelled";
+  bool authcanceled() {
+    return single.user == "canceled" || single.pass == "canceled";
   }
 
   bool authFailed() {
@@ -134,8 +133,9 @@ class EncryptionInterface {
       final Map<String, String>? decrypted = (await _channel.invokeMethod<Map<dynamic, dynamic>>(
         'decrypt',
         {'cipherText': encryptedText, 'alias': keyAliasAccount},
-      ))?.map((key, value) => MapEntry(key.toString(), value.toString()));
-      
+      ))
+          ?.map((key, value) => MapEntry(key.toString(), value.toString()));
+
       if (decrypted == null) {
         // print("decrypt returned null");
         return (user_: '', pass_: '');

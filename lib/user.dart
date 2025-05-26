@@ -111,7 +111,7 @@ class _UserScreenState extends State<UserScreen> {
     // unlocked user exists in cache -> setUser() without unlockUser()
     else {
       // print("Found User: [${SecureDataCache.single.user}]!");
-      if (SecureDataCache.single.pass == "cancelled") {
+      if (SecureDataCache.single.pass == "canceled") {
         setState(() {
           authComplete = false;
         });

@@ -163,7 +163,7 @@ class MainActivity : FlutterFragmentActivity() {
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                         when (errorCode) {
                             BiometricPrompt.ERROR_USER_CANCELED -> {
-                                cont.resume(AuthRes.Failure("cancelled"))
+                                cont.resume(AuthRes.Failure("canceled"))
                             }
 
                             else -> {

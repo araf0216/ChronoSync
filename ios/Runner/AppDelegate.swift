@@ -73,7 +73,12 @@ import LocalAuthentication
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-  func initKey(alias: String) throws -> SymmetricKey {
+  enum AuthRes {
+    case Success(SymmetricKey)
+    case Failure(String)
+  }
+
+  func initKey(alias: String) throws -> AuthRes {
     let context = LAContext()
     context.interactionNotAllowed = false
 
@@ -90,7 +95,11 @@ import LocalAuthentication
     let status = SecItemCopyMatching(query as CFDictionary, &item)
 
     if status == errSecSuccess, let data = item as? Data {
-      return SymmetricKey(data: data)
+      let key = SymmetricKey(data: data)
+      return .Success(key)
+    } else if status == errSecUserCanceled {
+      let reason = "canceled"
+      return .Failure(reason)
     }
 
     // no existing key -> generate new + store in keychain
@@ -116,10 +125,10 @@ import LocalAuthentication
 
         let storeStatus = SecItemAdd(storeQuery as CFDictionary, nil)
         if storeStatus != errSecSuccess {
-            throw NSError(domain: "KeychainError", code: Int(storeStatus), userInfo: [NSLocalizedDescriptionKey: "Failed to store new key"])
+          throw NSError(domain: "KeychainError", code: Int(storeStatus), userInfo: [NSLocalizedDescriptionKey: "Failed to store new key"])
         }
 
-        return key
+        return .Success(key)
     }
 
     // unknown error
@@ -155,12 +164,19 @@ import LocalAuthentication
   }
 
   private func encrypt(rawBytes: Data, alias: String) throws -> String {
-    let key = try initKey(alias: alias)
-    let sealed = try AES.GCM.seal(rawBytes, using: key)
-    guard let uniqueCipher = sealed.combined else {
-      throw NSError(domain: "ENCRYPTION_FAILED", code: -1)
+    let authRes = try initKey(alias: alias)
+
+    switch authRes {
+      case .Failure(let reason):
+        return reason
+      
+      case .Success(let key):
+        let sealed = try AES.GCM.seal(rawBytes, using: key)
+        guard let uniqueCipher = sealed.combined else {
+          throw NSError(domain: "ENCRYPTION_FAILED", code: -1)
+        }
+        return uniqueCipher.base64EncodedString()
     }
-    return uniqueCipher.base64EncodedString()
   }
 
   private func decrypt(cipher64: String, alias: String) throws -> Data {
@@ -169,8 +185,15 @@ import LocalAuthentication
     }
 
     let sealedBox = try AES.GCM.SealedBox(combined: encrypted)
-    let key = try initKey(alias: alias)
-    return try AES.GCM.open(sealedBox, using: key)
+    let authRes = try initKey(alias: alias)
+
+    switch authRes {
+      case .Failure(let reason):
+        return concatBytes(reason, reason)
+      
+      case .Success(let key):
+        return try AES.GCM.open(sealedBox, using: key)
+    }
   }
 
   private func remove(alias: String) -> Bool {
