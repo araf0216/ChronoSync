@@ -189,7 +189,7 @@ import LocalAuthentication
 
     switch authRes {
       case .Failure(let reason):
-        return concatBytes(reason, reason)
+        return concatBytes(userString: reason, passString: reason)
       
       case .Success(let key):
         return try AES.GCM.open(sealedBox, using: key)
